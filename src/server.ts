@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// import { Server } from 'http';
-// import app from './app';
+/* eslint-disable no-console */
 import config from './config';
 import server from './app';
 

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,16 +9,18 @@ datasource db {
 
 model User {
   id       String   @id @default(uuid())
-  userName String   @unique
+  phone    String   @unique
   password String
   role     UserRole
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  superAdmin       SuperAdmin?
-  admin            Admin?
-  driver           Driver?
-  helper           Helper?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  superAdmin   SuperAdmin?
+  admin        Admin?
+  seller       Seller?
+  sellsManager SellsManager?
+
   sentMessages     Conversation[] @relation(name: "Sender")
   receivedMessages Conversation[] @relation(name: "Receiver")
 
@@ -29,14 +28,18 @@ model User {
 }
 
 model SuperAdmin {
-  id         String  @id @default(uuid())
-  fullName   String
-  mobile     String  @unique
-  address    String?
-  profileImg String?
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id])
-  isActive   Boolean @default(true)
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  email                  String  @unique
+  address                String?
+  profileImg             String?
+  nidNumber              String
+  userId                 String  @unique
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -45,14 +48,18 @@ model SuperAdmin {
 }
 
 model Admin {
-  id         String  @id @default(uuid())
-  fullName   String
-  mobile     String  @unique
-  address    String?
-  profileImg String?
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id])
-  isActive   Boolean @default(true)
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  email                  String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -60,421 +67,20 @@ model Admin {
   @@map("admins")
 }
 
-model Driver {
-  id         String  @id @default(uuid())
-  driverId   String  @unique
-  fullName   String
-  mobile     String  @unique
-  address    String?
-  licenseNo  String?
-  bloodGroup String?
-  profileImg String?
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id])
-  isActive   Boolean @default(true)
-
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  vehicles          Vehicle[]
-  trips             Trip[]
-  fuels             Fuel[]
-  maintenances      Maintenance[]
-  accidentHistories AccidentHistory[]
-
-  @@map("drivers")
+model Seller {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
 
-model Helper {
-  id         String  @id @default(uuid())
-  helperId   String  @unique
-  fullName   String
-  mobile     String  @unique
-  address    String?
-  bloodGroup String?
-  profileImg String?
-  userId     String  @unique
-  user       User    @relation(fields: [userId], references: [id])
-  isActive   Boolean @default(true)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  vehicles  Vehicle[]
-  trips     Trip[]
-
-  @@map("helpers")
+model SellsManager {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
 
-model Brand {
-  id    String @id @default(uuid())
-  label String @unique
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  vehicles  Vehicle[]
-  models    Model[]
-
-  @@map("brands")
-}
-
-model Model {
-  id      String @id @default(uuid())
-  brandId String
-  brand   Brand  @relation(fields: [brandId], references: [id])
-  label   String @unique
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  vehicles  Vehicle[]
-
-  @@map("models")
-}
-
-model Vehicle {
-  id           String  @id @default(uuid())
-  regNo        String  @unique
-  brandId      String
-  brand        Brand   @relation(fields: [brandId], references: [id])
-  modelId      String
-  model        Model   @relation(fields: [modelId], references: [id])
-  vehicleValue Int
-  driverId     String?
-  driver       Driver? @relation(fields: [driverId], references: [id])
-  helperId     String?
-  helper       Helper? @relation(fields: [helperId], references: [id])
-  imageUrl     String?
-  isActive     Boolean @default(true)
-
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  trips             Trip[]
-  expenses          Expense[]
-  fuels             Fuel[]
-  maintenances      Maintenance[]
-  accidentHistories AccidentHistory[]
-  paperWorks        PaperWork[]
-  equipmentUses     EquipmentUse[]
-
-  @@map("vehicles")
-}
-
-model Party {
-  id       String  @id @default(uuid())
-  partyId  String  @unique
-  fullName String
-  mobile   String  @unique
-  address  String?
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  trips     Trip[]
-
-  @@map("parties")
-}
-
-model Trip {
-  id            String      @id @default(uuid())
-  tripNo        String      @unique
-  startDate     DateTime
-  endDate       DateTime
-  startedTime   DateTime?
-  completedTime DateTime?
-  from          String
-  to            String
-  odometerStart Int?
-  odometerEnd   Int?
-  distance      Int?
-  amount        Int
-  remarks       String?
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-  vehicleId     String
-  vehicle       Vehicle     @relation(fields: [vehicleId], references: [id])
-  driverId      String
-  driver        Driver      @relation(fields: [driverId], references: [id])
-  helperId      String?
-  helper        Helper?     @relation(fields: [helperId], references: [id])
-  partyId       String
-  party         Party       @relation(fields: [partyId], references: [id])
-  status        TripStatus  @default(Pending)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  expenses  Expense[]
-
-  @@map("trips")
-}
-
-model AccountType {
-  id    String @id @default(uuid())
-  label String @unique
-
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  accountHeads AccountHead[]
-
-  @@map("accountTypes")
-}
-
-model AccountHead {
-  id            String      @id @default(uuid())
-  accountTypeId String
-  accountType   AccountType @relation(fields: [accountTypeId], references: [id])
-  label         String      @unique
-
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  trips             Trip[]
-  expenses          Expense[]
-  vehicles          Vehicle[]
-  maintenances      Maintenance[]
-  equipmentUses     EquipmentUse[]
-  accidentHistories AccidentHistory[]
-  paperWorks        PaperWork[]
-
-  @@map("accountHeads")
-}
-
-model ExpenseHead {
-  id            String  @id @default(uuid())
-  label         String  @unique
-  isTripExpense Boolean @default(false)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  expenses  Expense[]
-
-  @@map("expenseHeads")
-}
-
-model MaintenanceHead {
-  id    String @id @default(uuid())
-  label String @unique
-
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  maintenances Maintenance[]
-
-  @@map("maintenanceHeads")
-}
-
-model Expense {
-  id            String      @id @default(uuid())
-  date          DateTime
-  vehicleId     String?
-  vehicle       Vehicle?    @relation(fields: [vehicleId], references: [id])
-  tripId        String?
-  trip          Trip?       @relation(fields: [tripId], references: [id])
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-  expenseHeadId String
-  expenseHead   ExpenseHead @relation(fields: [expenseHeadId], references: [id])
-  amount        Int
-  remarks       String?
-  isMisc        Boolean     @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("expenses")
-}
-
-model FuelType {
-  id    String @id @default(uuid())
-  label String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  fuels     Fuel[]
-
-  @@map("fuelTypes")
-}
-
-model FuelStation {
-  id      String  @id @default(uuid())
-  label   String
-  address String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  fuels     Fuel[]
-
-  @@map("fuelStations")
-}
-
-model Fuel {
-  id            String       @id @default(uuid())
-  date          DateTime
-  fuelTypeId    String
-  fuelType      FuelType     @relation(fields: [fuelTypeId], references: [id])
-  vehicleId     String
-  vehicle       Vehicle      @relation(fields: [vehicleId], references: [id])
-  driverId      String?
-  driver        Driver?      @relation(fields: [driverId], references: [id])
-  fuelStationId String?
-  fuelStation   FuelStation? @relation(fields: [fuelStationId], references: [id])
-  odometer      Int?
-  quantity      Float
-  amount        Int
-  remarks       String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("fuels")
-}
-
-model Uom {
-  id    String @id @default(uuid())
-  label String
-
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  equipments Equipment[]
-
-  @@map("uoms")
-}
-
-model Equipment {
-  id    String @id @default(uuid())
-  label String
-  uomId String
-  uom   Uom    @relation(fields: [uomId], references: [id])
-
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  equipmentIns  EquipmentIn[]
-  equipmentUses EquipmentUse[]
-
-  @@map("equipments")
-}
-
-model EquipmentIn {
-  id          String    @id @default(uuid())
-  date        DateTime
-  equipmentId String
-  equipment   Equipment @relation(fields: [equipmentId], references: [id])
-  quantity    Float
-  unitPrice   Float
-  totalPrice  Float
-  remarks     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("equipmentIns")
-}
-
-model Maintenance {
-  id     String   @id @default(uuid())
-  date   DateTime
-  billNo String   @unique
-
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-
-  driverId String?
-  driver   Driver? @relation(fields: [driverId], references: [id])
-
-  odoMeter        Int?
-  workshopType    Workshop
-  maintenanceType MaintenanceType
-  workshopDetails String?
-  serviceCharge   Int
-  remarks         String?
-
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-
-  maintenanceHeadId String
-  maintenanceHead   MaintenanceHead @relation(fields: [maintenanceHeadId], references: [id])
-
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  equipmentUses EquipmentUse[]
-
-  @@map("maintenances")
-}
-
-model EquipmentUse {
-  id            String      @id @default(uuid())
-  date          DateTime
-  vehicleId     String
-  vehicle       Vehicle     @relation(fields: [vehicleId], references: [id])
-  maintenanceId String
-  maintenance   Maintenance @relation(fields: [maintenanceId], references: [id])
-  equipmentId   String
-  equipment     Equipment   @relation(fields: [equipmentId], references: [id])
-  quantity      Float
-  unitPrice     Float
-  totalPrice    Float
-  remarks       String?
-  inHouse       Boolean
-
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("equipmentUses")
-}
-
-model AccidentHistory {
-  id   String   @id @default(uuid())
-  date DateTime
-
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-
-  driverId String
-  driver   Driver @relation(fields: [driverId], references: [id])
-
-  details String
-
-  location      String
-  odoMeter      Int?
-  paymentStatus AccidentPaymentStatus
-  amount        Int
-
-  accountHeadId String?
-  accountHead   AccountHead? @relation(fields: [accountHeadId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("accidentHistories")
-}
-
-model PaperWork {
-  id   String   @id @default(uuid())
-  date DateTime
-
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-
-  certificateNo String
-  effectiveDate DateTime
-  expiryDate    DateTime?
-  daysToRemind  Int?
-
-  odoMeter    Int?
-  paperType   PaperType
-  fee         Int
-  otherAmount Int?
-  totalAmount Int
-  remarks     String?
-
-  accountHeadId String
-  accountHead   AccountHead @relation(fields: [accountHeadId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("paperWorks")
+model Product {
+  id String @id @default(uuid())
 }
 
 model Conversation {
@@ -508,12 +114,11 @@ model Message {
 }
 
 // enum
-
 enum UserRole {
   super_admin
   admin
-  driver
-  helper
+  seller
+  sells_manager
 }
 
 enum TripStatus {
