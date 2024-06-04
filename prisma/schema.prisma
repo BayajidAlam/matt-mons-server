@@ -23,6 +23,7 @@ model User {
 
   sentMessages     Conversation[] @relation(name: "Sender")
   receivedMessages Conversation[] @relation(name: "Receiver")
+  Customer         Customer?
 
   @@map("users")
 }
@@ -68,19 +69,65 @@ model Admin {
 }
 
 model Seller {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  email                  String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sellers")
 }
 
 model SellsManager {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  email                  String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Shop      Shop?    @relation(fields: [shopId], references: [id])
+  shopId    String?
+
+  @@map("sellsManager")
 }
 
-model Product {
-  id String @id @default(uuid())
+model Customer {
+  id                     String   @id @default(uuid())
+  fullName               String
+  contactNumber          String   @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String   @unique
+  email                  String   @unique
+  isActive               Boolean  @default(true)
+  dob                    DateTime
+  user                   User     @relation(fields: [userId], references: [id])
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ReviewAndRatings ReviewAndRatings[]
+
+  @@map("customers")
 }
 
 model Conversation {
@@ -113,41 +160,93 @@ model Message {
   @@map("messages")
 }
 
+model Shop {
+  id           String         @id @default(uuid())
+  sellerId     String
+  sellsMangers SellsManager[]
+  shopName     String
+  shopImage    String
+  rating       String
+  location     String
+  isVarified   Boolean        @default(false)
+  products     Product[]
+
+  @@map("shop")
+}
+
+model Product {
+  id     String @id @default(uuid())
+  shopId String
+
+  Shop Shop @relation(fields: [shopId], references: [id])
+
+  productName             String
+  productMainImage        String
+  productAdditionalImages String[]
+  ProductDetails          String
+  productAdditionalInfo   String
+  minPrice                String
+  discounPrice            String
+  discountPercentage      String
+  moneySaved              String
+  isAvailable             Boolean
+
+  productSkuId String
+  ProductSku   ProductSku @relation(fields: [productSkuId], references: [id])
+
+  categoryId String
+  Category   Category @relation(fields: [categoryId], references: [id])
+
+  productTagsId    String
+  ProductTags      ProductTags        @relation(fields: [productTagsId], references: [id])
+  ReviewAndRatings ReviewAndRatings[]
+}
+
+model Category {
+  id      String    @id @default(uuid())
+  title   String
+  Product Product[]
+
+  @@map("category")
+}
+
+model ProductSku {
+  id             String    @id @default(uuid())
+  title          String
+  availableColor String[]
+  availableSize  String[]
+  Product        Product[]
+
+  @@map("sku")
+}
+
+model ProductTags {
+  id      String    @id @default(uuid())
+  title   String
+  Product Product[]
+
+  @@map("tags")
+}
+
+model ReviewAndRatings {
+  id         String   @id @default(uuid())
+  Customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+  comment   String
+  rating    String
+  like      String
+  disLike   String
+
+  @@map("reviewAndRatings")
+}
+
 // enum
 enum UserRole {
   super_admin
   admin
   seller
   sells_manager
-}
-
-enum TripStatus {
-  Pending
-  Running
-  Completed
-}
-
-enum Workshop {
-  InHouse
-  External
-}
-
-enum MaintenanceType {
-  Scheduled
-  Unscheduled
-  Accidental
-  Others
-}
-
-enum AccidentPaymentStatus {
-  Paid
-  Received
-  Nothing
-}
-
-enum PaperType {
-  Registration
-  Tax
-  Fitness
-  Route
 }
