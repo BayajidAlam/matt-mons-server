@@ -49,16 +49,35 @@ const createSuperAdmin = async (
 };
 
 // create admin
-const createAdmin = async (user: User, admin: Admin): Promise<User | null> => {
-  user.password = await bcrypt.hash(
-    user.password,
+const createAdmin = async (
+  userData: User,
+  adminData: Admin
+): Promise<User | null> => {
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
     Number(config.bcrypt_salt_rounds)
   );
 
-  user.role = UserRole.admin;
+  userData.role = UserRole.admin;
 
-  const result = await prisma.user.create({
-    data: { ...user, admin: { create: admin } },
+  const result = await prisma.$transaction(async prisma => {
+    const user = await prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        role: UserRole.admin,
+        admin: {
+          create: {
+            ...adminData,
+          },
+        },
+      },
+      include: {
+        admin: true,
+      },
+    });
+
+    return user;
   });
 
   if (!result) {

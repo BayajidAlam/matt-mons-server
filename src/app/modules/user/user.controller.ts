@@ -11,13 +11,12 @@ import { paginationFields } from '../../../constaints/pagination';
 // create super admin
 const createSuperAdmin = catchAsync(async (req: Request, res: Response) => {
   const { superAdmin, ...userData } = req.body;
-  console.log(req.body,'body')
   const result = await UserService.createSuperAdmin(userData, superAdmin);
 
   sendResponse<User>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Super Admin Added Successfully',
+    message: 'Super created Successfully',
     data: result,
   });
 });
@@ -25,13 +24,13 @@ const createSuperAdmin = catchAsync(async (req: Request, res: Response) => {
 // create admin
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const { admin, ...userData } = req.body;
-
+  console.log(req.body, 'body');
   const result = await UserService.createAdmin(userData, admin);
 
   sendResponse<User>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Admin Added Successfully',
+    message: 'Admin created Successfully',
     data: result,
   });
 });

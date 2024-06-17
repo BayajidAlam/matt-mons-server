@@ -27,13 +27,16 @@ const createSuperAdmin = z.object({
 
 const createAdmin = z.object({
   body: z.object({
-    userName: z.string({ required_error: 'User Name is Required' }),
+    email: z.string({ required_error: 'Email is Required' }),
     password: z.string({ required_error: 'Password is Required' }),
     admin: z.object({
       fullName: z.string({ required_error: 'Full Name is Required' }),
-      mobile: z.string({ required_error: 'Mobile No is Required' }),
+      contactNumber: z.string({ required_error: 'Contact Number is Required' }), 
+      emergencyContactNumber: z.string({ required_error: 'Emergency Contact Number is Required' }).optional(),
       address: z.string().optional(),
       profileImg: z.string().optional(),
+      nidNumber: z.string({ required_error: 'Nid Number is Required' }).optional(), 
+      isActive: z.boolean().optional(), 
     }),
   }),
 });
