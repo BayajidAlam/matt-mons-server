@@ -19,7 +19,6 @@ CREATE TABLE "superAdmins" (
     "fullName" TEXT NOT NULL,
     "contactNumber" TEXT NOT NULL,
     "emergencyContactNumber" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "address" TEXT,
     "profileImg" TEXT,
     "nidNumber" TEXT NOT NULL,
@@ -40,7 +39,6 @@ CREATE TABLE "admins" (
     "address" TEXT,
     "profileImg" TEXT,
     "userId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "nidNumber" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,10 +53,9 @@ CREATE TABLE "sellers" (
     "fullName" TEXT NOT NULL,
     "contactNumber" TEXT NOT NULL,
     "emergencyContactNumber" TEXT NOT NULL,
-    "address" TEXT,
-    "profileImg" TEXT,
+    "address" TEXT NOT NULL,
+    "profileImg" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "nidNumber" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -76,7 +73,6 @@ CREATE TABLE "sellsManagers" (
     "address" TEXT,
     "profileImg" TEXT,
     "userId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "nidNumber" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -95,7 +91,6 @@ CREATE TABLE "customers" (
     "address" TEXT,
     "profileImg" TEXT,
     "userId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "dob" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -138,7 +133,7 @@ CREATE TABLE "shop" (
     "shopImage" TEXT NOT NULL,
     "rating" TEXT NOT NULL,
     "location" TEXT NOT NULL,
-    "isVarified" BOOLEAN NOT NULL DEFAULT false,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "shop_pkey" PRIMARY KEY ("id")
 );
@@ -210,9 +205,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "superAdmins_contactNumber_key" ON "superAdmins"("contactNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "superAdmins_email_key" ON "superAdmins"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "superAdmins_userId_key" ON "superAdmins"("userId");
 
 -- CreateIndex
@@ -222,16 +214,10 @@ CREATE UNIQUE INDEX "admins_contactNumber_key" ON "admins"("contactNumber");
 CREATE UNIQUE INDEX "admins_userId_key" ON "admins"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "admins_email_key" ON "admins"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "sellers_contactNumber_key" ON "sellers"("contactNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sellers_userId_key" ON "sellers"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "sellers_email_key" ON "sellers"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sellsManagers_contactNumber_key" ON "sellsManagers"("contactNumber");
@@ -240,16 +226,10 @@ CREATE UNIQUE INDEX "sellsManagers_contactNumber_key" ON "sellsManagers"("contac
 CREATE UNIQUE INDEX "sellsManagers_userId_key" ON "sellsManagers"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sellsManagers_email_key" ON "sellsManagers"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "customers_contactNumber_key" ON "customers"("contactNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "customers_userId_key" ON "customers"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
 
 -- AddForeignKey
 ALTER TABLE "superAdmins" ADD CONSTRAINT "superAdmins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -277,6 +257,9 @@ ALTER TABLE "conversations" ADD CONSTRAINT "conversations_receiverId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES "conversations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "shop" ADD CONSTRAINT "shop_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "sellers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

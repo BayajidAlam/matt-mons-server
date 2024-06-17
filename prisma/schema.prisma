@@ -71,8 +71,8 @@ model Seller {
   fullName               String
   contactNumber          String  @unique
   emergencyContactNumber String
-  address                String?
-  profileImg             String?
+  address                String
+  profileImg             String
   userId                 String  @unique
   nidNumber              String
   isActive               Boolean @default(true)
@@ -81,6 +81,7 @@ model Seller {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Shop      Shop[]
 
   @@map("sellers")
 }
@@ -163,8 +164,9 @@ model Shop {
   shopImage    String
   rating       String
   location     String
-  isVarified   Boolean        @default(false)
+  isVerified   Boolean        @default(false)
   products     Product[]
+  seller       Seller         @relation(fields: [sellerId], references: [id])
 
   @@map("shop")
 }

@@ -31,12 +31,38 @@ const createAdmin = z.object({
     password: z.string({ required_error: 'Password is Required' }),
     admin: z.object({
       fullName: z.string({ required_error: 'Full Name is Required' }),
-      contactNumber: z.string({ required_error: 'Contact Number is Required' }), 
-      emergencyContactNumber: z.string({ required_error: 'Emergency Contact Number is Required' }).optional(),
+      contactNumber: z.string({ required_error: 'Contact Number is Required' }),
+      emergencyContactNumber: z
+        .string({ required_error: 'Emergency Contact Number is Required' })
+        .optional(),
       address: z.string().optional(),
       profileImg: z.string().optional(),
-      nidNumber: z.string({ required_error: 'Nid Number is Required' }).optional(), 
-      isActive: z.boolean().optional(), 
+      nidNumber: z
+        .string({ required_error: 'Nid Number is Required' })
+        .optional(),
+      isActive: z.boolean().optional(),
+    }),
+  }),
+});
+
+const createSeller = z.object({
+  body: z.object({
+    email: z.string({ required_error: 'Email is Required' }),
+    password: z.string({ required_error: 'Password is Required' }),
+    seller: z.object({
+      fullName: z.string({ required_error: 'Full Name is Required' }),
+      contactNumber: z.string({ required_error: 'Contact Number is Required' }),
+      emergencyContactNumber: z
+        .string({ required_error: 'Emergency Contact Number is Required' })
+        .optional(),
+      address: z.string({
+        required_error: 'Address is Required',
+      }),
+      profileImg: z.string({
+        required_error: 'Profile Image is Required',
+      }),
+      nidNumber: z.string({ required_error: 'Nid Number is Required' }),
+      isActive: z.boolean(),
     }),
   }),
 });
@@ -73,6 +99,7 @@ const createHelper = z.object({
 export const UserValidation = {
   createSuperAdmin,
   createAdmin,
+  createSeller,
   createDriver,
   createHelper,
 };

@@ -1,0 +1,1 @@
+// sellsManager interface

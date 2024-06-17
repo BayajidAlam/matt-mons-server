@@ -1,4 +1,11 @@
-import { Admin, Prisma, SuperAdmin, User, UserRole } from '@prisma/client';
+import {
+  Admin,
+  Prisma,
+  Seller,
+  SuperAdmin,
+  User,
+  UserRole,
+} from '@prisma/client';
 import bcrypt from 'bcrypt';
 import prisma from '../../../shared/prisma';
 import ApiError from '../../../errors/ApiError';
@@ -87,6 +94,45 @@ const createAdmin = async (
   return result;
 };
 
+// create seller
+const createSeller = async (
+  userData: User,
+  sellerData: Seller
+): Promise<User | null> => {
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  userData.role = UserRole.seller;
+
+  const result = await prisma.$transaction(async prisma => {
+    const user = await prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        role: UserRole.seller, 
+        seller: {
+          create: {
+            ...sellerData,
+          },
+        },
+      },
+      include: {
+        seller: true,
+      },
+    });
+
+    return user;
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Create Seller');
+  }
+
+  return result;
+};
+
 // get all
 const getAll = async (
   filters: IUserFilters,
@@ -151,5 +197,6 @@ const getAll = async (
 export const UserService = {
   createSuperAdmin,
   createAdmin,
+  createSeller,
   getAll,
 };

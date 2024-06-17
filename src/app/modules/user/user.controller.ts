@@ -35,6 +35,20 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// create seller
+const createSeller = catchAsync(async (req: Request, res: Response) => {
+  const { seller, ...userData } = req.body; 
+  console.log(req.body, 'body');
+  const result = await UserService.createSeller(userData, seller); 
+
+  sendResponse<User>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Seller created successfully',
+    data: result,
+  });
+});
+
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields);
@@ -53,5 +67,6 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 export const UserController = {
   createSuperAdmin,
   createAdmin,
+  createSeller,
   getAll,
 };

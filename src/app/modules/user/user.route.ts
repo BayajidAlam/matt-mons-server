@@ -33,4 +33,12 @@ router.post(
   UserController.createAdmin
 );
 
+// create seller
+router.post(
+  '/create-seller',
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  validateRequest(UserValidation.createSeller),
+  UserController.createSeller
+);
+
 export const UserRoutes = router;
