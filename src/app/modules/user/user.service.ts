@@ -2,6 +2,7 @@ import {
   Admin,
   Prisma,
   Seller,
+  SellsManager,
   SuperAdmin,
   User,
   UserRole,
@@ -133,6 +134,46 @@ const createSeller = async (
   return result;
 };
 
+// create sellsManager
+const createSellsManager = async (
+  userData: User,
+  sellsManagerData: SellsManager
+): Promise<User | null> => {
+
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  userData.role = UserRole.sells_manager;
+
+  const result = await prisma.$transaction(async prisma => {
+    const user = await prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        role: UserRole.sells_manager, 
+        sellsManager: {
+          create: {
+            ...sellsManagerData,
+          },
+        },
+      },
+      include: {
+        sellsManager: true,
+      },
+    });
+
+    return user;
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Create Sells Manager');
+  }
+
+  return result;
+};
+
 // get all
 const getAll = async (
   filters: IUserFilters,
@@ -198,5 +239,6 @@ export const UserService = {
   createSuperAdmin,
   createAdmin,
   createSeller,
+  createSellsManager,
   getAll,
 };

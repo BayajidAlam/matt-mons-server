@@ -37,14 +37,30 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 
 // create seller
 const createSeller = catchAsync(async (req: Request, res: Response) => {
-  const { seller, ...userData } = req.body; 
+  const { seller, ...userData } = req.body;
   console.log(req.body, 'body');
-  const result = await UserService.createSeller(userData, seller); 
+  const result = await UserService.createSeller(userData, seller);
 
   sendResponse<User>(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Seller created successfully',
+    data: result,
+  });
+});
+
+// create sells manager
+const createSellsManager = catchAsync(async (req: Request, res: Response) => {
+
+  const { sellsManager, ...userData } = req.body;
+  console.log(req.body, 'body');
+
+  const result = await UserService.createSellsManager(userData, sellsManager);
+
+  sendResponse<User>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Sells manager created successfully',
     data: result,
   });
 });
@@ -68,5 +84,6 @@ export const UserController = {
   createSuperAdmin,
   createAdmin,
   createSeller,
+  createSellsManager,
   getAll,
 };

@@ -10,19 +10,17 @@ import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interface';
 
 // login
 const login = async (
-  payload: Pick<User, 'userName' | 'password'>
+  payload: Pick<User, 'email' | 'password'>
 ): Promise<ILoginUserResponse> => {
-  const { userName, password } = payload;
+  const { email, password } = payload;
 
   const isUserExist = await prisma.user.findUnique({
     where: {
-      userName,
+      email,
     },
     include: {
       superAdmin: true,
       admin: true,
-      driver: true,
-      helper: true,
     },
   });
 
@@ -43,7 +41,7 @@ const login = async (
     {
       id,
       role,
-      userName,
+      email,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin
@@ -67,7 +65,7 @@ const login = async (
     {
       id,
       role,
-      userName,
+      email,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin
@@ -125,14 +123,14 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
-  const { role, userName, superAdmin, admin, driver, helper } = isUserExist;
+  const { role, email, superAdmin, admin } = isUserExist;
   //generate new token
 
   const newAccessToken = jwtHelpers.createToken(
     {
       id,
       role,
-      userName,
+      email,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin

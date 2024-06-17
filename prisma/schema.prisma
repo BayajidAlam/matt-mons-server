@@ -16,14 +16,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  superAdmin   SuperAdmin?
-  admin        Admin?
-  seller       Seller?
-  sellsManager SellsManager?
+  superAdmin SuperAdmin?
+  admin      Admin?
+  seller     Seller?
 
   sentMessages     Conversation[] @relation(name: "Sender")
   receivedMessages Conversation[] @relation(name: "Receiver")
   Customer         Customer?
+  SellsManager     SellsManager?
 
   @@map("users")
 }
@@ -97,12 +97,12 @@ model SellsManager {
   nidNumber              String
   isActive               Boolean @default(true)
 
-  user User @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  Shop   Shop?   @relation(fields: [shopId], references: [id])
+  shopId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Shop      Shop?    @relation(fields: [shopId], references: [id])
-  shopId    String?
 
   @@map("sellsManagers")
 }

@@ -67,6 +67,29 @@ const createSeller = z.object({
   }),
 });
 
+const createSellsManager = z.object({
+  body: z.object({
+    email: z.string({ required_error: 'Email is Required' }),
+    password: z.string({ required_error: 'Password is Required' }),
+    sellsManager: z.object({
+      fullName: z.string({ required_error: 'Full Name is Required' }),
+      contactNumber: z.string({ required_error: 'Contact Number is Required' }),
+      emergencyContactNumber: z
+        .string({ required_error: 'Emergency Contact Number is Required' })
+        .optional(),
+      address: z.string({
+        required_error: 'Address is Required',
+      }).optional(),
+      profileImg: z.string({
+        required_error: 'Profile Image is Required',
+      }).optional(),
+      nidNumber: z.string({ required_error: 'Nid Number is Required' }),
+      isActive: z.boolean(),
+      shopId: z.string().optional(),
+    }),
+  }),
+});
+
 const createDriver = z.object({
   body: z.object({
     userName: z.string({ required_error: 'User Name is Required' }),
@@ -100,6 +123,7 @@ export const UserValidation = {
   createSuperAdmin,
   createAdmin,
   createSeller,
+  createSellsManager,
   createDriver,
   createHelper,
 };
