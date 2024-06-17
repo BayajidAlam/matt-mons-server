@@ -10,20 +10,17 @@ const router = express.Router();
 // get all
 router.get(
   '/',
-  auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-  ),
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
   UserController.getAll
 );
 
 // create super admin
 router.post(
   '/create-super-admin',
-  auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-  ),
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  // ),
   validateRequest(UserValidation.createSuperAdmin),
   UserController.createSuperAdmin
 );
@@ -31,13 +28,9 @@ router.post(
 // create admin
 router.post(
   '/create-admin',
-  auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-  ),
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
   validateRequest(UserValidation.createAdmin),
   UserController.createAdmin
 );
-
 
 export const UserRoutes = router;

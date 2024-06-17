@@ -1,12 +1,5 @@
-import {
-  Admin,
-  Prisma,
-  SuperAdmin,
-  User,
-  UserRole,
-} from '@prisma/client';
+import { Admin, Prisma, SuperAdmin, User, UserRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import config from '../../../config';
 import prisma from '../../../shared/prisma';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
@@ -15,21 +8,37 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { userSearchableFields } from './user.constant';
+import config from '../../../config';
 
-// create super admin
 const createSuperAdmin = async (
-  user: User,
-  superAdmin: SuperAdmin
+  userData: User,
+  superAdminData: SuperAdmin
 ): Promise<User | null> => {
-  user.password = await bcrypt.hash(
-    user.password,
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
     Number(config.bcrypt_salt_rounds)
   );
 
-  user.role = UserRole.super_admin;
+  userData.role = UserRole.super_admin;
 
-  const result = await prisma.user.create({
-    data: { ...user, superAdmin: { create: superAdmin } },
+  const result = await prisma.$transaction(async prisma => {
+    const user = await prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        role: UserRole.super_admin,
+        superAdmin: {
+          create: {
+            ...superAdminData,
+          },
+        },
+      },
+      include: {
+        superAdmin: true,
+      },
+    });
+
+    return user;
   });
 
   if (!result) {

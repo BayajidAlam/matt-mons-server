@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id       String   @id @default(uuid())
-  phone    String   @unique
+  email    String   @unique
   password String
   role     UserRole
 
@@ -33,7 +33,6 @@ model SuperAdmin {
   fullName               String
   contactNumber          String  @unique
   emergencyContactNumber String
-  email                  String  @unique
   address                String?
   profileImg             String?
   nidNumber              String
@@ -56,7 +55,6 @@ model Admin {
   address                String?
   profileImg             String?
   userId                 String  @unique
-  email                  String  @unique
   nidNumber              String
   isActive               Boolean @default(true)
 
@@ -76,7 +74,6 @@ model Seller {
   address                String?
   profileImg             String?
   userId                 String  @unique
-  email                  String  @unique
   nidNumber              String
   isActive               Boolean @default(true)
 
@@ -96,7 +93,6 @@ model SellsManager {
   address                String?
   profileImg             String?
   userId                 String  @unique
-  email                  String  @unique
   nidNumber              String
   isActive               Boolean @default(true)
 
@@ -118,7 +114,6 @@ model Customer {
   address                String?
   profileImg             String?
   userId                 String   @unique
-  email                  String   @unique
   isActive               Boolean  @default(true)
   dob                    DateTime
   user                   User     @relation(fields: [userId], references: [id])

@@ -11,7 +11,7 @@ import { paginationFields } from '../../../constaints/pagination';
 // create super admin
 const createSuperAdmin = catchAsync(async (req: Request, res: Response) => {
   const { superAdmin, ...userData } = req.body;
-
+  console.log(req.body,'body')
   const result = await UserService.createSuperAdmin(userData, superAdmin);
 
   sendResponse<User>(res, {
