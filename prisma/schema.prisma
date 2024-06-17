@@ -107,7 +107,7 @@ model SellsManager {
   Shop      Shop?    @relation(fields: [shopId], references: [id])
   shopId    String?
 
-  @@map("sellsManager")
+  @@map("sellsManagers")
 }
 
 model Customer {
@@ -249,4 +249,5 @@ enum UserRole {
   admin
   seller
   sells_manager
+  customer
 }
