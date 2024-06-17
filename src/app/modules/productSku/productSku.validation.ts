@@ -1,0 +1,1 @@
+// productSku validation
