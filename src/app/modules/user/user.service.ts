@@ -1,5 +1,6 @@
 import {
   Admin,
+  Customer,
   Prisma,
   Seller,
   SellsManager,
@@ -112,7 +113,7 @@ const createSeller = async (
       data: {
         ...userData,
         password: hashedPassword,
-        role: UserRole.seller, 
+        role: UserRole.seller,
         seller: {
           create: {
             ...sellerData,
@@ -139,7 +140,6 @@ const createSellsManager = async (
   userData: User,
   sellsManagerData: SellsManager
 ): Promise<User | null> => {
-
   const hashedPassword = await bcrypt.hash(
     userData.password,
     Number(config.bcrypt_salt_rounds)
@@ -152,7 +152,7 @@ const createSellsManager = async (
       data: {
         ...userData,
         password: hashedPassword,
-        role: UserRole.sells_manager, 
+        role: UserRole.sells_manager,
         sellsManager: {
           create: {
             ...sellsManagerData,
@@ -168,7 +168,52 @@ const createSellsManager = async (
   });
 
   if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Create Sells Manager');
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Failed to Create Sells Manager'
+    );
+  }
+
+  return result;
+};
+
+// create sellsManager
+const createCustomer = async (
+  userData: User,
+  customerData: Customer
+): Promise<User | null> => {
+  const hashedPassword = await bcrypt.hash(
+    userData.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+
+  userData.role = UserRole.customer;
+
+  const result = await prisma.$transaction(async prisma => {
+    const user = await prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        role: UserRole.sells_manager,
+        customer: {
+          create: {
+            ...customerData,
+          },
+        },
+      },
+      include: {
+        customer: true,
+      },
+    });
+
+    return user;
+  });
+
+  if (!result) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Failed to Create Sells Manager'
+    );
   }
 
   return result;
@@ -240,5 +285,6 @@ export const UserService = {
   createAdmin,
   createSeller,
   createSellsManager,
+  createCustomer,
   getAll,
 };

@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { bloodGroup } from '../../../constaints/bloodGroup';
 
 const createSuperAdmin = z.object({
   body: z.object({
@@ -77,12 +76,16 @@ const createSellsManager = z.object({
       emergencyContactNumber: z
         .string({ required_error: 'Emergency Contact Number is Required' })
         .optional(),
-      address: z.string({
-        required_error: 'Address is Required',
-      }).optional(),
-      profileImg: z.string({
-        required_error: 'Profile Image is Required',
-      }).optional(),
+      address: z
+        .string({
+          required_error: 'Address is Required',
+        })
+        .optional(),
+      profileImg: z
+        .string({
+          required_error: 'Profile Image is Required',
+        })
+        .optional(),
       nidNumber: z.string({ required_error: 'Nid Number is Required' }),
       isActive: z.boolean(),
       shopId: z.string().optional(),
@@ -90,31 +93,28 @@ const createSellsManager = z.object({
   }),
 });
 
-const createDriver = z.object({
+const createCustomer = z.object({
   body: z.object({
-    userName: z.string({ required_error: 'User Name is Required' }),
+    email: z.string({ required_error: 'Email is Required' }),
     password: z.string({ required_error: 'Password is Required' }),
-    driver: z.object({
-      fullName: z.string({ required_error: 'Full Name is Required' }),
-      mobile: z.string({ required_error: 'Mobile No is Required' }),
+    customer: z.object({
+      fullName: z.string().optional(),
+      contactNumber: z
+        .string()
+        .optional()
+        .refine(val => val == null || /^\+?[1-9]\d{1,14}$/.test(val), {
+          message: 'Invalid contact number format',
+        }),
+      emergencyContactNumber: z
+        .string()
+        .optional()
+        .refine(val => val == null || /^\+?[1-9]\d{1,14}$/.test(val), {
+          message: 'Invalid emergency contact number format',
+        }),
       address: z.string().optional(),
-      licenseNo: z.string().optional(),
-      bloodGroup: z.enum(bloodGroup as [string, ...string[]]).optional(),
       profileImg: z.string().optional(),
-    }),
-  }),
-});
-
-const createHelper = z.object({
-  body: z.object({
-    userName: z.string({ required_error: 'User Name is Required' }),
-    password: z.string({ required_error: 'Password is Required' }),
-    helper: z.object({
-      fullName: z.string({ required_error: 'Full Name is Required' }),
-      mobile: z.string({ required_error: 'Mobile No is Required' }),
-      address: z.string().optional(),
-      bloodGroup: z.enum(bloodGroup as [string, ...string[]]).optional(),
-      profileImg: z.string().optional(),
+      isActive: z.boolean().default(true),
+      dob: z.string({ required_error: 'Date of Birth is Required' }),
     }),
   }),
 });
@@ -124,6 +124,5 @@ export const UserValidation = {
   createAdmin,
   createSeller,
   createSellsManager,
-  createDriver,
-  createHelper,
+  createCustomer,
 };

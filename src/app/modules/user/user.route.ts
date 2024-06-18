@@ -49,4 +49,12 @@ router.post(
   UserController.createSellsManager
 );
 
+//create customer
+router.post(
+  '/create-customer',
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  validateRequest(UserValidation.createCustomer),
+  UserController.createCustomer
+);
+
 export const UserRoutes = router;

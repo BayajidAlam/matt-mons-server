@@ -1,1 +1,1 @@
-// productTags interface
+// category interface

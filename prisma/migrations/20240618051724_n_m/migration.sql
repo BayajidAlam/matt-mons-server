@@ -75,9 +75,9 @@ CREATE TABLE "sellsManagers" (
     "userId" TEXT NOT NULL,
     "nidNumber" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "shopId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "shopId" TEXT,
 
     CONSTRAINT "sellsManagers_pkey" PRIMARY KEY ("id")
 );
@@ -145,16 +145,16 @@ CREATE TABLE "Product" (
     "productName" TEXT NOT NULL,
     "productMainImage" TEXT NOT NULL,
     "productAdditionalImages" TEXT[],
-    "ProductDetails" TEXT NOT NULL,
+    "productDetails" TEXT NOT NULL,
     "productAdditionalInfo" TEXT NOT NULL,
     "minPrice" TEXT NOT NULL,
-    "discounPrice" TEXT NOT NULL,
+    "discountPrice" TEXT NOT NULL,
     "discountPercentage" TEXT NOT NULL,
     "moneySaved" TEXT NOT NULL,
     "isAvailable" BOOLEAN NOT NULL,
     "productSkuId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
-    "productTagsId" TEXT NOT NULL,
+    "productTags" TEXT[],
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -269,9 +269,6 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_productSkuId_fkey" FOREIGN KEY ("p
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_productTagsId_fkey" FOREIGN KEY ("productTagsId") REFERENCES "tags"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviewAndRatings" ADD CONSTRAINT "reviewAndRatings_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

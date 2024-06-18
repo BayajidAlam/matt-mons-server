@@ -1,1 +1,1 @@
-// productSku interface
+// category interface

@@ -22,8 +22,8 @@ model User {
 
   sentMessages     Conversation[] @relation(name: "Sender")
   receivedMessages Conversation[] @relation(name: "Receiver")
-  Customer         Customer?
-  SellsManager     SellsManager?
+  customer         Customer?
+  sellsManager     SellsManager?
 
   @@map("users")
 }
@@ -108,16 +108,16 @@ model SellsManager {
 }
 
 model Customer {
-  id                     String   @id @default(uuid())
-  fullName               String
-  contactNumber          String   @unique
-  emergencyContactNumber String
+  id                     String  @id @default(uuid())
+  fullName               String?
+  contactNumber          String? @unique
+  emergencyContactNumber String?
   address                String?
   profileImg             String?
-  userId                 String   @unique
-  isActive               Boolean  @default(true)
-  dob                    DateTime
-  user                   User     @relation(fields: [userId], references: [id])
+  userId                 String  @unique
+  isActive               Boolean @default(true)
+  dob                    String
+  user                   User    @relation(fields: [userId], references: [id])
 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
@@ -180,10 +180,10 @@ model Product {
   productName             String
   productMainImage        String
   productAdditionalImages String[]
-  ProductDetails          String
+  productDetails          String
   productAdditionalInfo   String
   minPrice                String
-  discounPrice            String
+  discountPrice           String
   discountPercentage      String
   moneySaved              String
   isAvailable             Boolean
@@ -194,8 +194,7 @@ model Product {
   categoryId String
   Category   Category @relation(fields: [categoryId], references: [id])
 
-  productTagsId    String
-  ProductTags      ProductTags        @relation(fields: [productTagsId], references: [id])
+  productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
 }
 
@@ -212,15 +211,15 @@ model ProductSku {
   title          String
   availableColor String[]
   availableSize  String[]
+  quantity       String    @default("0")
   Product        Product[]
 
   @@map("sku")
 }
 
 model ProductTags {
-  id      String    @id @default(uuid())
-  title   String
-  Product Product[]
+  id    String @id @default(uuid())
+  title String
 
   @@map("tags")
 }
