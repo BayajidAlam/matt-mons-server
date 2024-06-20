@@ -98,7 +98,7 @@ const createCustomer = z.object({
     email: z.string({ required_error: 'Email is Required' }),
     password: z.string({ required_error: 'Password is Required' }),
     customer: z.object({
-      fullName: z.string().optional(),
+      fullName: z.string({ required_error: 'Full Name is Required!' }),
       contactNumber: z
         .string()
         .optional()
@@ -114,7 +114,7 @@ const createCustomer = z.object({
       address: z.string().optional(),
       profileImg: z.string().optional(),
       isActive: z.boolean().default(true),
-      dob: z.string({ required_error: 'Date of Birth is Required' }),
+      dob: z.string().optional(),
     }),
   }),
 });

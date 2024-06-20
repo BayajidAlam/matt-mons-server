@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import config from '../../../config';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import { Secret } from 'jsonwebtoken';
@@ -21,6 +21,9 @@ const login = async (
     include: {
       superAdmin: true,
       admin: true,
+      seller: true,
+      sellsManager: true,
+      customer: true,
     },
   });
 
@@ -34,28 +37,47 @@ const login = async (
   ) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect');
   }
+
   // create access token and refresh token
-  const { id, role, superAdmin, admin, driver, helper } = isUserExist;
+  const { id, role, superAdmin, admin, seller, sellsManager, customer } =
+    isUserExist;
+
+  // add shop count of a seller to JWT
+  let shopCount = 0;
+  if (role === UserRole.seller) {
+    const isShopExist = await prisma.shop.findMany({
+      where: {
+        sellerId: seller?.id,
+      },
+    });
+    shopCount = isShopExist.length;
+  }
 
   const accessToken = jwtHelpers.createToken(
     {
       id,
       role,
       email,
+      shopCount,
+      sellerId: seller?.id,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin
         ? admin.fullName
-        : driver
-        ? driver.fullName
-        : helper?.fullName,
-      profileImg: superAdmin
+        : seller
+        ? seller.fullName
+        : sellsManager
+        ? sellsManager?.fullName
+        : customer?.fullName,
+      profileImage: superAdmin
         ? superAdmin?.profileImg
         : admin
         ? admin.profileImg
-        : driver
-        ? driver.profileImg
-        : helper?.profileImg,
+        : seller
+        ? seller.profileImg
+        : sellsManager
+        ? sellsManager?.profileImg
+        : customer?.profileImg,
     },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
@@ -66,20 +88,25 @@ const login = async (
       id,
       role,
       email,
+      shopCount,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin
         ? admin.fullName
-        : driver
-        ? driver.fullName
-        : helper?.fullName,
-      profileImg: superAdmin
+        : seller
+        ? seller.fullName
+        : sellsManager
+        ? sellsManager?.fullName
+        : customer?.fullName,
+      profileImage: superAdmin
         ? superAdmin?.profileImg
         : admin
         ? admin.profileImg
-        : driver
-        ? driver.profileImg
-        : helper?.profileImg,
+        : seller
+        ? seller.profileImg
+        : sellsManager
+        ? sellsManager?.profileImg
+        : customer?.profileImg,
     },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
@@ -115,15 +142,17 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     include: {
       superAdmin: true,
       admin: true,
-      driver: true,
-      helper: true,
+      seller: true,
+      sellsManager: true,
+      customer: true,
     },
   });
 
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
-  const { role, email, superAdmin, admin } = isUserExist;
+  const { role, email, superAdmin, admin, seller, sellsManager, customer } =
+    isUserExist;
   //generate new token
 
   const newAccessToken = jwtHelpers.createToken(
@@ -135,16 +164,20 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
         ? superAdmin?.fullName
         : admin
         ? admin.fullName
-        : driver
-        ? driver.fullName
-        : helper?.fullName,
-      profileImg: superAdmin
+        : seller
+        ? seller.fullName
+        : sellsManager
+        ? sellsManager?.fullName
+        : customer?.fullName,
+      profileImage: superAdmin
         ? superAdmin?.profileImg
         : admin
         ? admin.profileImg
-        : driver
-        ? driver.profileImg
-        : helper?.profileImg,
+        : seller
+        ? seller.profileImg
+        : sellsManager
+        ? sellsManager?.profileImg
+        : customer?.profileImg,
     },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string

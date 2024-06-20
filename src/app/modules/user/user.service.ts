@@ -19,6 +19,70 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { userSearchableFields } from './user.constant';
 import config from '../../../config';
 
+
+// get all users
+const getAllUsers = async (
+  filters: IUserFilters,
+  paginationOptions: IPaginationOptions
+): Promise<IGenericResponse<User[]>> => {
+  const { searchTerm, role } = filters;
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions);
+
+  const andConditions = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: userSearchableFields.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    });
+  }
+  if (role) {
+    andConditions.push({
+      role: role,
+    });
+  }
+
+  const whereConditions: Prisma.UserWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = await prisma.user.findMany({
+    where: whereConditions,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    skip,
+    take: limit,
+    include: {
+      superAdmin: true,
+      admin: true,
+      seller: true,
+      sellsManager: true,
+      customer: true,
+    },
+  });
+
+  const total = await prisma.user.count({
+    where: whereConditions,
+  });
+  const totalPage = Math.ceil(total / limit);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage,
+    },
+    data: result,
+  };
+};
+
+
 const createSuperAdmin = async (
   userData: User,
   superAdminData: SuperAdmin
@@ -182,6 +246,8 @@ const createCustomer = async (
   userData: User,
   customerData: Customer
 ): Promise<User | null> => {
+
+  
   const hashedPassword = await bcrypt.hash(
     userData.password,
     Number(config.bcrypt_salt_rounds)
@@ -194,7 +260,7 @@ const createCustomer = async (
       data: {
         ...userData,
         password: hashedPassword,
-        role: UserRole.sells_manager,
+        role: UserRole.customer,
         customer: {
           create: {
             ...customerData,
@@ -219,72 +285,11 @@ const createCustomer = async (
   return result;
 };
 
-// get all
-const getAll = async (
-  filters: IUserFilters,
-  paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<User[]>> => {
-  const { searchTerm, role } = filters;
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(paginationOptions);
-
-  const andConditions = [];
-
-  if (searchTerm) {
-    andConditions.push({
-      OR: userSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
-    });
-  }
-  if (role) {
-    andConditions.push({
-      role: role,
-    });
-  }
-
-  const whereConditions: Prisma.UserWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {};
-
-  const result = await prisma.user.findMany({
-    where: whereConditions,
-    orderBy: {
-      [sortBy]: sortOrder,
-    },
-    skip,
-    take: limit,
-    include: {
-      superAdmin: true,
-      admin: true,
-      driver: true,
-      helper: true,
-    },
-  });
-
-  const total = await prisma.user.count({
-    where: whereConditions,
-  });
-  const totalPage = Math.ceil(total / limit);
-
-  return {
-    meta: {
-      page,
-      limit,
-      total,
-      totalPage,
-    },
-    data: result,
-  };
-};
-
 export const UserService = {
   createSuperAdmin,
   createAdmin,
   createSeller,
   createSellsManager,
   createCustomer,
-  getAll,
+  getAllUsers,
 };

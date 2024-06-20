@@ -21,7 +21,7 @@ const auth =
         token,
         config.jwt.secret as Secret
       );
-
+      
       req.user = verifiedToken;
 
       // guard by role

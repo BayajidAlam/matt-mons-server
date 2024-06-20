@@ -1,1 +1,3 @@
-// seller interface
+export type IHelperFilters = {
+  searchTerm?: string;
+};

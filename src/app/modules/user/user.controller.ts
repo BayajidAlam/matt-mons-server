@@ -78,10 +78,11 @@ const createCustomer = catchAsync(async (req: Request, res: Response) => {
 });
 
 // get all
-const getAll = catchAsync(async (req: Request, res: Response) => {
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
-  const result = await UserService.getAll(filters, paginationOptions);
+
+  const result = await UserService.getAllUsers(filters, paginationOptions);
 
   sendResponse<User[]>(res, {
     statusCode: httpStatus.OK,
@@ -98,5 +99,5 @@ export const UserController = {
   createSeller,
   createSellsManager,
   createCustomer,
-  getAll,
+  getAllUsers,
 };

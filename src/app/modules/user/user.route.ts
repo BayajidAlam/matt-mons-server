@@ -2,16 +2,14 @@ import express from 'express';
 import { UserController } from './user.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserValidation } from './user.validation';
-import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enums/user';
 
 const router = express.Router();
 
-// get all
+// get all users
 router.get(
   '/',
-  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-  UserController.getAll
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  UserController.getAllUsers
 );
 
 // create super admin

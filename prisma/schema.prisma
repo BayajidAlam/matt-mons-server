@@ -109,14 +109,14 @@ model SellsManager {
 
 model Customer {
   id                     String  @id @default(uuid())
-  fullName               String?
+  fullName               String
   contactNumber          String? @unique
   emergencyContactNumber String?
   address                String?
   profileImg             String?
   userId                 String  @unique
   isActive               Boolean @default(true)
-  dob                    String
+  dob                    String?
   user                   User    @relation(fields: [userId], references: [id])
 
   createdAt        DateTime           @default(now())
@@ -135,9 +135,10 @@ model Conversation {
   receiverId   String
   receiver     User   @relation(name: "Receiver", fields: [receiverId], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  messages  Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
 
   @@map("conversations")
 }
@@ -162,11 +163,14 @@ model Shop {
   sellsMangers SellsManager[]
   shopName     String
   shopImage    String
-  rating       String
+  rating       String         @default("0")
   location     String
   isVerified   Boolean        @default(false)
   products     Product[]
   seller       Seller         @relation(fields: [sellerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("shop")
 }
@@ -196,12 +200,18 @@ model Product {
 
   productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
   id      String    @id @default(uuid())
   title   String
   Product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("category")
 }
@@ -214,12 +224,18 @@ model ProductSku {
   quantity       String    @default("0")
   Product        Product[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("sku")
 }
 
 model ProductTags {
   id    String @id @default(uuid())
   title String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("tags")
 }
@@ -235,6 +251,9 @@ model ReviewAndRatings {
   rating    String
   like      String
   disLike   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("reviewAndRatings")
 }

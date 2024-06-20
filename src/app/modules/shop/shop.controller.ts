@@ -8,6 +8,7 @@ import catchAsync from '../../../shared/catchAsync';
 // create super admin
 const createShop = catchAsync(async (req: Request, res: Response) => {
   const shopData = req.body;
+  console.log(shopData, 'shop data');
   const result = await ShopService.createShop(shopData);
 
   sendResponse<Shop>(res, {

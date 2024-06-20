@@ -1,1 +1,3 @@
-// category interface
+export type ICategoryFilters = {
+  searchTerm?: string;
+};
