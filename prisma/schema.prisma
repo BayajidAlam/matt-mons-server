@@ -176,11 +176,12 @@ model Shop {
 }
 
 model Coupon {
-  id        String   @id @default(uuid())
-  shopId    String
-  couponName String
-  discount  String
-  validTill DateTime
+  id             String   @id @default(uuid())
+  shopId         String
+  couponName     String
+  discount       String
+  shippingCharge String
+  validTill      DateTime
 
   Shop Shop @relation(fields: [shopId], references: [id])
 
@@ -218,6 +219,12 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  orderId      String?
+  orderOrderId String?
+  Order        Order?  @relation(fields: [orderId], references: [id])
+  Cart         Cart?   @relation(fields: [cartId], references: [id])
+  cartId       String?
 }
 
 model Category {
@@ -253,6 +260,44 @@ model ProductTags {
   updatedAt DateTime @updatedAt
 
   @@map("tags")
+}
+
+model Order {
+  id                     String    @id @default(uuid())
+  userId                 String
+  contactNumber          String?
+  emergencyContactNumber String?
+  address                String?
+  products               Product[]
+  subTotal               String
+  shippingCharge         String
+  tax                    String
+  total                  String
+
+  @@map("orders")
+}
+
+model Cart {
+  id        String    @id @default(uuid())
+  userId    String
+  productId String[]
+  products  Product[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("carts")
+}
+
+model WishList {
+  id        String @id @default(uuid())
+  userId    String
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("wishlists")
 }
 
 model ReviewAndRatings {
