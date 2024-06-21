@@ -1,18 +1,16 @@
 import prisma from '../../../shared/prisma';
-import { Prisma, SellsManager } from '@prisma/client';
-import { ISellsManagerFilters } from './sellsManager.interface';
+import { Coupon, Prisma } from '@prisma/client';
+import { ICouponFilters } from './cupon.interface';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { sellsManagerSearchableFields } from './sellsManager.constant';
-import ApiError from '../../../errors/ApiError';
-import httpStatus from 'http-status';
+import { couponSearchableFields } from './cupon.constant';
 
 // get all
 const getAll = async (
-  filters: ISellsManagerFilters,
+  filters: ICouponFilters,
   paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<SellsManager[]>> => {
+): Promise<IGenericResponse<Coupon[]>> => {
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -21,7 +19,7 @@ const getAll = async (
 
   if (searchTerm) {
     andConditions.push({
-      OR: sellsManagerSearchableFields.map(field => ({
+      OR: couponSearchableFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -38,10 +36,10 @@ const getAll = async (
     });
   }
 
-  const whereConditions: Prisma.SellsManagerWhereInput =
+  const whereConditions: Prisma.CouponWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.sellsManager.findMany({
+  const result = await prisma.coupon.findMany({
     where: whereConditions,
     orderBy: {
       [sortBy]: sortOrder,
@@ -50,7 +48,7 @@ const getAll = async (
     take: limit,
   });
 
-  const total = await prisma.sellsManager.count({
+  const total = await prisma.coupon.count({
     where: whereConditions,
   });
   const totalPage = Math.ceil(total / limit);
@@ -67,8 +65,8 @@ const getAll = async (
 };
 
 // get single
-const getSingle = async (id: string): Promise<SellsManager | null> => {
-  const result = await prisma.sellsManager.findUnique({
+const getSingle = async (id: string): Promise<Coupon | null> => {
+  const result = await prisma.coupon.findUnique({
     where: {
       id,
     },
@@ -76,35 +74,35 @@ const getSingle = async (id: string): Promise<SellsManager | null> => {
   return result;
 };
 
-// update single
-const updateSingle = async (
-  id: string,
-  payload: Partial<SellsManager>
-): Promise<SellsManager | null> => {
-  // check is exist
-  const isExist = await prisma.sellsManager.findUnique({
-    where: {
-      id,
-    },
-  });
+// // update single
+// const updateSingle = async (
+//   id: string,
+//   payload: Partial<Helper>
+// ): Promise<Helper | null> => {
+//   // check is exist
+//   const isExist = await prisma.helper.findUnique({
+//     where: {
+//       id,
+//     },
+//   });
 
-  if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Helper Not Found');
-  }
+//   if (!isExist) {
+//     throw new ApiError(httpStatus.NOT_FOUND, 'Helper Not Found');
+//   }
 
-  const result = await prisma.sellsManager.update({
-    where: {
-      id,
-    },
-    data: payload,
-  });
+//   const result = await prisma.helper.update({
+//     where: {
+//       id,
+//     },
+//     data: payload,
+//   });
 
-  if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Helper');
-  }
+//   if (!result) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Helper');
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
 // // inactive
 // const inactive = async (id: string): Promise<Helper | null> => {
@@ -129,8 +127,7 @@ const updateSingle = async (
 //   return result;
 // };
 
-export const SellsManagerService = {
+export const CouponService = {
   getSingle,
   getAll,
-  updateSingle,
 };

@@ -2,22 +2,22 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
-import { SellsManager } from '@prisma/client';
-import pick from '../../../shared/pick';
+import { Coupon } from '@prisma/client';
+import { CouponService } from './cupon.service';
+import { couponFilterableFields } from './cupon.constant';
 import { paginationFields } from '../../../constaints/pagination';
-import { SellsManagerService } from './sellsManager.service';
-import { sellsManagerFilterableFields } from './sellsManager.constant';
+import pick from '../../../shared/pick';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, sellsManagerFilterableFields);
+  const filters = pick(req.query, couponFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
-  const result = await SellsManagerService.getAll(filters, paginationOptions);
+  const result = await CouponService.getAll(filters, paginationOptions);
 
-  sendResponse<SellsManager[]>(res, {
+  sendResponse<Coupon[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sells Managers retrieved successfully',
+    message: 'Coupons retrieved successfully',
     meta: result.meta,
     data: result.data,
   });
@@ -27,30 +27,30 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 const getSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const result = await SellsManagerService.getSingle(id);
+  const result = await CouponService.getSingle(id);
 
-  sendResponse<SellsManager>(res, {
+  sendResponse<Coupon>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sells manager retrieved successfully',
+    message: 'Seller retrieved successfully',
     data: result,
   });
 });
 
-// update single
-const updateSingle = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  const data = req.body;
+// // update single
+// const updateSingle = catchAsync(async (req: Request, res: Response) => {
+//   const id = req.params.id;
+//   const data = req.body;
 
-  const result = await SellsManagerService.updateSingle(id, data);
+//   const result = await HelperService.updateSingle(id, data);
 
-  sendResponse<SellsManager>(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: 'Sells Manager Updated Successfully',
-    data: result,
-  });
-});
+//   sendResponse<Helper>(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: 'Helper Updated Successfully',
+//     data: result,
+//   });
+// });
 
 // // inactive
 // const inactive = catchAsync(async (req: Request, res: Response) => {
@@ -66,8 +66,7 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
-export const SellsManagerController = {
-  getAll,
+export const CouponController = {
   getSingle,
-  updateSingle,
+  getAll,
 };

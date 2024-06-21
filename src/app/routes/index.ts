@@ -8,6 +8,7 @@ import { ProductRoutes } from '../modules/product/product.route';
 import { AuthRoutes } from '../modules/auth/auth.route';
 import { SellerRoutes } from '../modules/seller/seller.route';
 import { SellsManagerRoutes } from '../modules/sellsManager/sellsManager.route';
+import { CouponRoutes } from '../modules/coupon/cupon.route';
 
 const router = express.Router();
 
@@ -31,6 +32,10 @@ const moduleRoutes = [
   {
     path: '/shops',
     route: ShopRoutes,
+  },
+  {
+    path: '/coupons',
+    route: CouponRoutes,
   },
   {
     path: '/products',

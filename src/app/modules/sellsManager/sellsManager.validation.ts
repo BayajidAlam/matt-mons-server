@@ -1,17 +1,19 @@
 import { z } from 'zod';
-import { bloodGroup } from '../../../constaints/bloodGroup';
-
 
 const update = z.object({
   body: z.object({
     fullName: z.string().optional(),
-    mobile: z.string().optional(),
+    contactNumber: z.string().optional(), 
+    emergencyContactNumber: z.string().optional(),
     address: z.string().optional(),
-    bloodGroup: z.enum(bloodGroup as [string, ...string[]]).optional(),
     profileImg: z.string().optional(),
+    userId: z.string().optional(), 
+    nidNumber: z.string().optional(),
+    isActive: z.boolean().optional(),
+    shopId: z.string().optional(),
   }),
 });
 
-export const HelperValidation = {
+export const SellsManagerValidation = {
   update,
 };
