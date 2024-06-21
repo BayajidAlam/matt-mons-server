@@ -1,1 +1,3 @@
-// category interface
+export type IProductSkuFilters = {
+  searchTerm?: string;
+};

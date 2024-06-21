@@ -1,1 +1,3 @@
-// order interface
+export type IOrderFilters = {
+  searchTerm?: string;
+};

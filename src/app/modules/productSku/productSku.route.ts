@@ -7,6 +7,17 @@ import { ProductSkuValidation } from './productSku.validation';
 
 const router = express.Router();
 
+// get all
+router.get(
+  '/',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  ProductSkuController.getAll
+);
 // create shop
 router.post(
   '/create-product-sku',

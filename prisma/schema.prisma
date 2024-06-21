@@ -24,6 +24,7 @@ model User {
   receivedMessages Conversation[] @relation(name: "Receiver")
   customer         Customer?
   sellsManager     SellsManager?
+  Order            Order[]
 
   @@map("users")
 }
@@ -265,8 +266,10 @@ model ProductTags {
 model Order {
   id                     String    @id @default(uuid())
   userId                 String
+  user                   User      @relation(fields: [userId], references: [id])
   contactNumber          String?
   emergencyContactNumber String?
+  email                  String
   address                String?
   products               Product[]
   subTotal               String
@@ -282,9 +285,9 @@ model Cart {
   userId    String
   productId String[]
   products  Product[]
-  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("carts")
 }
