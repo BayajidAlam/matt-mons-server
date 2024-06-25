@@ -42,6 +42,12 @@ const login = async (
   const { id, role, superAdmin, admin, seller, sellsManager, customer } =
     isUserExist;
 
+  const shop = await prisma.shop.findFirst({
+    where: {
+      sellerId: seller?.id as string,
+    },
+  });
+
   // add shop count of a seller to JWT
   let shopCount = 0;
   if (role === UserRole.seller) {
@@ -60,6 +66,7 @@ const login = async (
       email,
       shopCount,
       sellerId: seller?.id,
+      shopId: shop?.id,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin
@@ -89,6 +96,8 @@ const login = async (
       role,
       email,
       shopCount,
+      sellerId: seller?.id,
+      shopId: shop?.id,
       fullName: superAdmin
         ? superAdmin?.fullName
         : admin

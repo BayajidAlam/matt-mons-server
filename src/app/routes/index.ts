@@ -9,6 +9,7 @@ import { AuthRoutes } from '../modules/auth/auth.route';
 import { SellerRoutes } from '../modules/seller/seller.route';
 import { SellsManagerRoutes } from '../modules/sellsManager/sellsManager.route';
 import { CouponRoutes } from '../modules/coupon/cupon.route';
+import { OrderRoutes } from '../modules/order/order.route';
 
 const router = express.Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: '/tags',
     route: ProductTagsRoutes,
+  },
+  {
+    path: '/orders',
+    route: OrderRoutes,
   },
 ];
 

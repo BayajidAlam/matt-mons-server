@@ -19,12 +19,22 @@ const getAll = async (
 
   if (searchTerm) {
     andConditions.push({
-      OR: productSkuSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
+      OR: productSkuSearchableFields.map(field => {
+        if (field === 'availableColor' || field === 'availableSize') {
+          return {
+            [field]: {
+              has: searchTerm,
+            },
+          };
+        } else {
+          return {
+            [field]: {
+              contains: searchTerm,
+              mode: 'insensitive',
+            },
+          };
+        }
+      }),
     });
   }
 

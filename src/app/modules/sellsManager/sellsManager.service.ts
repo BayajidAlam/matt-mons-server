@@ -129,8 +129,31 @@ const updateSingle = async (
 //   return result;
 // };
 
+// delete single
+const deleteSingle = async (id: string): Promise<SellsManager | null> => {
+  // check is exist
+  const isExist = await prisma.sellsManager.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sells Manager Not Found');
+  }
+
+  const result = await prisma.sellsManager.delete({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
 export const SellsManagerService = {
   getSingle,
   getAll,
   updateSingle,
+  deleteSingle,
 };

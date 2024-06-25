@@ -66,8 +66,23 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
+// delete
+const deleteSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await SellsManagerService.deleteSingle(id);
+
+  sendResponse<SellsManager>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Sells Manager Deleted successfully',
+    data: result,
+  });
+});
+
 export const SellsManagerController = {
   getAll,
   getSingle,
   updateSingle,
+  deleteSingle,
 };

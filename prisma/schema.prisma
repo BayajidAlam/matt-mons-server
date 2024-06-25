@@ -266,6 +266,7 @@ model ProductTags {
 model Order {
   id                     String    @id @default(uuid())
   userId                 String
+  shopId                 String
   user                   User      @relation(fields: [userId], references: [id])
   contactNumber          String?
   emergencyContactNumber String?
@@ -277,6 +278,9 @@ model Order {
   tax                    String
   total                  String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   @@map("orders")
 }
 

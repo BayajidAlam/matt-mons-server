@@ -1,7 +1,5 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import auth from '../../middlewares/auth';
-import { ENUM_USER_ROLE } from '../../../enums/user';
 import { ShopController } from './shop.controller';
 import { ShopValidation } from './shop.validation';
 

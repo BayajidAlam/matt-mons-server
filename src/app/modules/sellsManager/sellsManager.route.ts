@@ -34,16 +34,16 @@ router.patch(
   SellsManagerController.updateSingle
 );
 
-// // inactive
-// router.patch(
-//   '/:id/inactive',
-//   auth(
-//     ENUM_USER_ROLE.SUPER_ADMIN,
-//     ENUM_USER_ROLE.ADMIN,
-//     ENUM_USER_ROLE.DRIVER,
-//     ENUM_USER_ROLE.HELPER
-//   ),
-//   HelperController.inactive
-// );
+// delete single
+router.delete(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  SellsManagerController.deleteSingle
+);
 
 export const SellsManagerRoutes = router;

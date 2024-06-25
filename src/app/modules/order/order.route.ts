@@ -1,10 +1,9 @@
 import express from 'express';
 import { OrderController } from './order.controller';
 
-
 const router = express.Router();
 
-// get all
+// get all orders
 router.get(
   '/',
   // auth(
@@ -15,6 +14,7 @@ router.get(
   // ),
   OrderController.getAll
 );
+
 
 // get single
 // router.get(

@@ -64,6 +64,7 @@ const getAll = async (
   };
 };
 
+
 // get single
 const getSingle = async (id: string): Promise<Order | null> => {
   const result = await prisma.order.findUnique({
