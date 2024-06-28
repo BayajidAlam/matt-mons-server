@@ -10,6 +10,7 @@ if (!moduleName) {
 
 // Step 3: Define file names and optionally their default contents
 const files = [
+  'constant.ts',
   'route.ts',
   'controller.ts',
   'service.ts',

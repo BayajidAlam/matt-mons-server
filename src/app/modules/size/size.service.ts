@@ -1,18 +1,19 @@
-import { Color, Prisma, ProductSku } from '@prisma/client';
+import { Color, Prisma, Size } from '@prisma/client';
 import prisma from '../../../shared/prisma';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
-import { IColorFilters } from './color.interface';
-import { ColorSearchableFields } from './color.constant';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
+import { ISizeFilters } from './size.interface';
+import { SizeSearchableFields } from './size.constant';
 
 // get all users
 const getAll = async (
-  filters: IColorFilters,
+  filters: ISizeFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Color[]>> => {
+
   const { searchTerm } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -21,7 +22,7 @@ const getAll = async (
 
   if (searchTerm) {
     andConditions.push({
-      OR: ColorSearchableFields.map(field => ({
+      OR: SizeSearchableFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -30,10 +31,10 @@ const getAll = async (
     });
   }
 
-  const whereConditions: Prisma.ColorWhereInput =
+  const whereConditions: Prisma.SizeWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.color.findMany({
+  const result = await prisma.size.findMany({
     where: whereConditions,
     orderBy: {
       [sortBy]: sortOrder,
@@ -42,7 +43,7 @@ const getAll = async (
     take: limit,
   });
 
-  const total = await prisma.color.count({
+  const total = await prisma.size.count({
     where: whereConditions,
   });
   const totalPage = Math.ceil(total / limit);
@@ -59,10 +60,10 @@ const getAll = async (
 };
 
 //create
-const createColor = async (
-  productColorData: ProductSku
+const create = async (
+  productColorData: Size
 ): Promise<Color | null> => {
-  const result = await prisma.color.create({
+  const result = await prisma.size.create({
     data: productColorData,
   });
 
@@ -70,8 +71,8 @@ const createColor = async (
 };
 
 // get single
-const getSingle = async (id: string): Promise<Color | null> => {
-  const result = await prisma.color.findUnique({
+const getSingle = async (id: string): Promise<Size | null> => {
+  const result = await prisma.size.findUnique({
     where: {
       id,
     },
@@ -82,20 +83,20 @@ const getSingle = async (id: string): Promise<Color | null> => {
 // update single
 const updateSingle = async (
   id: string,
-  payload: Partial<Color>
-): Promise<Color | null> => {
+  payload: Partial<Size>
+): Promise<Size | null> => {
   // check is exist
-  const isExist = await prisma.color.findUnique({
+  const isExist = await prisma.size.findUnique({
     where: {
       id,
     },
   });
 
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Color Not Found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Size Not Found');
   }
 
-  const result = await prisma.color.update({
+  const result = await prisma.size.update({
     where: {
       id,
     },
@@ -103,26 +104,26 @@ const updateSingle = async (
   });
 
   if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Color');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Size');
   }
 
   return result;
 };
 
 // delete single
-const deleteSingle = async (id: string): Promise<Color | null> => {
+const deleteSingle = async (id: string): Promise<Size | null> => {
   // check is exist
-  const isExist = await prisma.color.findUnique({
+  const isExist = await prisma.size.findUnique({
     where: {
       id,
     },
   });
 
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Color Not Found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Size Not Found');
   }
 
-  const result = await prisma.color.delete({
+  const result = await prisma.size.delete({
     where: {
       id,
     },
@@ -131,8 +132,8 @@ const deleteSingle = async (id: string): Promise<Color | null> => {
   return result;
 };
 
-export const ProductColorService = {
-  createColor,
+export const ProductSizeService = {
+  create,
   getAll,
   getSingle,
   updateSingle,

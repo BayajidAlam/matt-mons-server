@@ -1,7 +1,7 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { ColorsController } from './color.controller';
-import { ColorsValidation } from './color.validation';
+import { SizeController } from './size.controller';
+import { SizeValidation } from './size.validation';
 // import auth from '../../middlewares/auth';
 // import { ENUM_USER_ROLE } from '../../../enums/user';
 
@@ -16,18 +16,18 @@ router.get(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  ColorsController.getAll
+  SizeController.getAll
 );
 
-// create 
+// create
 router.post(
-  '/create-color',
+  '/create-size',
   // auth(
   //   ENUM_Shop_ROLE.SUPER_ADMIN,
   //   ENUM_Shop_ROLE.ADMIN,
   // ),
-  validateRequest(ColorsValidation.createColor),
-  ColorsController.createColor
+  validateRequest(SizeValidation.createSize),
+  SizeController.create
 );
 
 // get single
@@ -37,7 +37,7 @@ router.get(
   //   ENUM_USER_ROLE.SUPER_ADMIN,
   //   ENUM_USER_ROLE.ADMIN,
   // ),
-  ColorsController.getSingle
+  SizeController.getSingle
 );
 
 // update single
@@ -49,8 +49,8 @@ router.patch(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  validateRequest(ColorsValidation.updateColor),
-  ColorsController.updateSingle
+  validateRequest(SizeValidation.updateSize),
+  SizeController.updateSingle
 );
 
 // delete single
@@ -62,6 +62,6 @@ router.delete(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  ColorsController.deleteSingle
+  SizeController.deleteSingle
 );
-export const ColorsRoutes = router;
+export const SizeRoutes = router;

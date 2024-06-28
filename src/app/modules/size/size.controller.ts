@@ -1,38 +1,38 @@
-import { Color } from '@prisma/client';
+import { Size } from '@prisma/client';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
-import { ProductColorService } from './color.service';
 import pick from '../../../shared/pick';
 import { paginationFields } from '../../../constaints/pagination';
-import { ColorFilterableFields } from './color.constant';
+import { ProductSizeService } from './size.service';
+import { SizeFilterableFields } from './size.constant';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ColorFilterableFields);
+  const filters = pick(req.query, SizeFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await ProductColorService.getAll(filters, paginationOptions);
+  const result = await ProductSizeService.getAll(filters, paginationOptions);
 
-  sendResponse<Color[]>(res, {
+  sendResponse<Size[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Color retrieved successfully',
+    message: 'Size retrieved successfully',
     meta: result.meta,
     data: result.data,
   });
 });
 
 //create
-const createColor = catchAsync(async (req: Request, res: Response) => {
-  const ProductColorData = req.body;
-  const result = await ProductColorService.createColor(ProductColorData);
+const create = catchAsync(async (req: Request, res: Response) => {
+  const ProductSizeData = req.body;
+  const result = await ProductSizeService.create(ProductSizeData);
 
-  sendResponse<Color>(res, {
+  sendResponse<Size>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Color created Successfully',
+    message: 'Size created Successfully',
     data: result,
   });
 });
@@ -41,12 +41,12 @@ const createColor = catchAsync(async (req: Request, res: Response) => {
 const getSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const result = await ProductColorService.getSingle(id);
+  const result = await ProductSizeService.getSingle(id);
 
-  sendResponse<Color>(res, {
+  sendResponse<Size>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Color retrieved successfully',
+    message: 'Size retrieved successfully',
     data: result,
   });
 });
@@ -56,12 +56,12 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const data = req.body;
 
-  const result = await ProductColorService.updateSingle(id, data);
+  const result = await ProductSizeService.updateSingle(id, data);
 
-  sendResponse<Color>(res, {
+  sendResponse<Size>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Color Updated Successfully',
+    message: 'Size Updated Successfully',
     data: result,
   });
 });
@@ -70,18 +70,18 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
 const deleteSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const result = await ProductColorService.deleteSingle(id);
+  const result = await ProductSizeService.deleteSingle(id);
 
-  sendResponse<Color>(res, {
+  sendResponse<Size>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Color Deleted successfully',
+    message: 'Size Deleted successfully',
     data: result,
   });
 });
 
-export const ColorsController = {
-  createColor,
+export const SizeController = {
+  create,
   getAll,
   getSingle,
   updateSingle,

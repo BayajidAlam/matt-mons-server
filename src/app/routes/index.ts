@@ -11,6 +11,7 @@ import { SellsManagerRoutes } from '../modules/sellsManager/sellsManager.route';
 import { CouponRoutes } from '../modules/coupon/cupon.route';
 import { OrderRoutes } from '../modules/order/order.route';
 import { ColorsRoutes } from '../modules/color/color.route';
+import { SizeRoutes } from '../modules/size/size.route';
 
 const router = express.Router();
 
@@ -54,6 +55,10 @@ const moduleRoutes = [
   {
     path: '/colors',
     route: ColorsRoutes,
+  },
+  {
+    path: '/sizes',
+    route: SizeRoutes,
   },
   {
     path: '/tags',
