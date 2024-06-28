@@ -10,6 +10,7 @@ import { SellerRoutes } from '../modules/seller/seller.route';
 import { SellsManagerRoutes } from '../modules/sellsManager/sellsManager.route';
 import { CouponRoutes } from '../modules/coupon/cupon.route';
 import { OrderRoutes } from '../modules/order/order.route';
+import { ColorsRoutes } from '../modules/color/color.route';
 
 const router = express.Router();
 
@@ -49,6 +50,10 @@ const moduleRoutes = [
   {
     path: '/skus',
     route: ProductSkuRoutes,
+  },
+  {
+    path: '/colors',
+    route: ColorsRoutes,
   },
   {
     path: '/tags',

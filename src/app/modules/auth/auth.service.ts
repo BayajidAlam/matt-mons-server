@@ -42,6 +42,7 @@ const login = async (
   const { id, role, superAdmin, admin, seller, sellsManager, customer } =
     isUserExist;
 
+  //get and add shop id to jwt
   const shop = await prisma.shop.findFirst({
     where: {
       sellerId: seller?.id as string,

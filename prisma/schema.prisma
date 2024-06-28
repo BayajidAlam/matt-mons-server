@@ -183,6 +183,7 @@ model Coupon {
   discount       String
   shippingCharge String
   validTill      DateTime
+  createdBy      String
 
   Shop Shop @relation(fields: [shopId], references: [id])
 
@@ -210,10 +211,9 @@ model Product {
   isAvailable             Boolean
 
   productSkuId String
-  ProductSku   ProductSku @relation(fields: [productSkuId], references: [id])
-
-  categoryId String
-  Category   Category @relation(fields: [categoryId], references: [id])
+  createdBy    String
+  categoryId   String
+  Category     Category @relation(fields: [categoryId], references: [id])
 
   productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
@@ -223,9 +223,12 @@ model Product {
 
   orderId      String?
   orderOrderId String?
-  Order        Order?  @relation(fields: [orderId], references: [id])
-  Cart         Cart?   @relation(fields: [cartId], references: [id])
+  Order        Order?       @relation(fields: [orderId], references: [id])
+  Cart         Cart?        @relation(fields: [cartId], references: [id])
   cartId       String?
+  ProductSku   ProductSku[]
+
+  @@map("product")
 }
 
 model Category {
@@ -240,17 +243,58 @@ model Category {
 }
 
 model ProductSku {
-  id             String    @id @default(uuid())
+  id             String            @id @default(uuid())
   title          String
-  availableColor String[]
-  availableSize  String[]
-  quantity       String    @default("0")
-  Product        Product[]
+  quantity       String            @default("0")
+  Product        Product           @relation(fields: [productId], references: [id])
+  availableColor ProductSkuColor[]
+  availableSize  ProductSkuSize[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  productId String
 
   @@map("sku")
+}
+
+model Color {
+  id              String            @id @default(uuid())
+  title           String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ProductSkuColor ProductSkuColor[]
+
+  @@map("colors")
+}
+
+model Size {
+  id             String           @id @default(uuid())
+  title          String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ProductSkuSize ProductSkuSize[]
+
+  @@map("sizes")
+}
+
+model ProductSkuColor {
+  skuId   String
+  colorId String
+  sku     ProductSku @relation(fields: [skuId], references: [id])
+  color   Color      @relation(fields: [colorId], references: [id])
+
+  @@id([skuId, colorId])
+  @@map("productSkuColors")
+}
+
+model ProductSkuSize {
+  skuId  String
+  sizeId String
+  sku    ProductSku @relation(fields: [skuId], references: [id])
+  size   Size       @relation(fields: [sizeId], references: [id])
+
+  @@id([skuId, sizeId])
+  @@map("productSkuSizes")
 }
 
 model ProductTags {
@@ -264,10 +308,10 @@ model ProductTags {
 }
 
 model Order {
-  id                     String    @id @default(uuid())
+  id                     String      @id @default(uuid())
   userId                 String
   shopId                 String
-  user                   User      @relation(fields: [userId], references: [id])
+  user                   User        @relation(fields: [userId], references: [id])
   contactNumber          String?
   emergencyContactNumber String?
   email                  String
@@ -277,10 +321,11 @@ model Order {
   shippingCharge         String
   tax                    String
   total                  String
+  orderStatus            OrderStatus @default(received)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@map("orders")
 }
 
@@ -332,4 +377,13 @@ enum UserRole {
   seller
   sells_manager
   customer
+}
+
+enum OrderStatus {
+  received
+  on_warhouse
+  on_curier
+  shipped
+  handovered
+  canceled
 }

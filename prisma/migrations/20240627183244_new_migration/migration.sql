@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('super_admin', 'admin', 'seller', 'sells_manager', 'customer');
 
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('received', 'on_warhouse', 'on_curier', 'shipped', 'handovered', 'canceled');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -86,13 +89,13 @@ CREATE TABLE "sellsManagers" (
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
-    "contactNumber" TEXT NOT NULL,
-    "emergencyContactNumber" TEXT NOT NULL,
+    "contactNumber" TEXT,
+    "emergencyContactNumber" TEXT,
     "address" TEXT,
     "profileImg" TEXT,
     "userId" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "dob" TIMESTAMP(3) NOT NULL,
+    "dob" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -131,15 +134,32 @@ CREATE TABLE "shop" (
     "sellerId" TEXT NOT NULL,
     "shopName" TEXT NOT NULL,
     "shopImage" TEXT NOT NULL,
-    "rating" TEXT NOT NULL,
+    "rating" TEXT NOT NULL DEFAULT '0',
     "location" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "shop_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Product" (
+CREATE TABLE "coupon" (
+    "id" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
+    "couponName" TEXT NOT NULL,
+    "discount" TEXT NOT NULL,
+    "shippingCharge" TEXT NOT NULL,
+    "validTill" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "coupon_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "product" (
     "id" TEXT NOT NULL,
     "shopId" TEXT NOT NULL,
     "productName" TEXT NOT NULL,
@@ -153,16 +173,24 @@ CREATE TABLE "Product" (
     "moneySaved" TEXT NOT NULL,
     "isAvailable" BOOLEAN NOT NULL,
     "productSkuId" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
     "productTags" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "orderId" TEXT,
+    "orderOrderId" TEXT,
+    "cartId" TEXT,
 
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "category" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "category_pkey" PRIMARY KEY ("id")
 );
@@ -171,18 +199,86 @@ CREATE TABLE "category" (
 CREATE TABLE "sku" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "availableColor" TEXT[],
-    "availableSize" TEXT[],
+    "quantity" TEXT NOT NULL DEFAULT '0',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "productId" TEXT NOT NULL,
 
     CONSTRAINT "sku_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "colors" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "productSkuId" TEXT,
+
+    CONSTRAINT "colors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "sizes" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "productSkuId" TEXT,
+
+    CONSTRAINT "sizes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "tags" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "tags_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "orders" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
+    "contactNumber" TEXT,
+    "emergencyContactNumber" TEXT,
+    "email" TEXT NOT NULL,
+    "address" TEXT,
+    "subTotal" TEXT NOT NULL,
+    "shippingCharge" TEXT NOT NULL,
+    "tax" TEXT NOT NULL,
+    "total" TEXT NOT NULL,
+    "orderStatus" "OrderStatus" NOT NULL DEFAULT 'received',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "carts" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "productId" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "wishlists" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "wishlists_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -194,6 +290,8 @@ CREATE TABLE "reviewAndRatings" (
     "rating" TEXT NOT NULL,
     "like" TEXT NOT NULL,
     "disLike" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "reviewAndRatings_pkey" PRIMARY KEY ("id")
 );
@@ -262,16 +360,34 @@ ALTER TABLE "messages" ADD CONSTRAINT "messages_conversationId_fkey" FOREIGN KEY
 ALTER TABLE "shop" ADD CONSTRAINT "shop_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "sellers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "coupon" ADD CONSTRAINT "coupon_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product" ADD CONSTRAINT "product_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "product" ADD CONSTRAINT "product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "carts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sku" ADD CONSTRAINT "sku_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "colors" ADD CONSTRAINT "colors_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sizes" ADD CONSTRAINT "sizes_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviewAndRatings" ADD CONSTRAINT "reviewAndRatings_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "reviewAndRatings" ADD CONSTRAINT "reviewAndRatings_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "reviewAndRatings" ADD CONSTRAINT "reviewAndRatings_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
