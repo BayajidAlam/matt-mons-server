@@ -210,10 +210,9 @@ model Product {
   moneySaved              String
   isAvailable             Boolean
 
-  productSkuId String
-  createdBy    String
-  categoryId   String
-  Category     Category @relation(fields: [categoryId], references: [id])
+  createdBy  String
+  categoryId String
+  Category   Category @relation(fields: [categoryId], references: [id])
 
   productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
@@ -223,10 +222,9 @@ model Product {
 
   orderId      String?
   orderOrderId String?
-  Order        Order?       @relation(fields: [orderId], references: [id])
-  Cart         Cart?        @relation(fields: [cartId], references: [id])
+  Order        Order?  @relation(fields: [orderId], references: [id])
+  Cart         Cart?   @relation(fields: [cartId], references: [id])
   cartId       String?
-  ProductSku   ProductSku[]
 
   @@map("product")
 }
@@ -243,58 +241,35 @@ model Category {
 }
 
 model ProductSku {
-  id             String            @id @default(uuid())
-  title          String
-  quantity       String            @default("0")
-  Product        Product           @relation(fields: [productId], references: [id])
-  availableColor ProductSkuColor[]
-  availableSize  ProductSkuSize[]
+  id       String @id @default(uuid())
+  title    String
+  quantity String @default("0")
+
+  availableColor String[]
+  availableSize  String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  productId String
 
   @@map("sku")
 }
 
 model Color {
-  id              String            @id @default(uuid())
-  title           String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  ProductSkuColor ProductSkuColor[]
+  id        String   @id @default(uuid())
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("colors")
 }
 
 model Size {
-  id             String           @id @default(uuid())
-  title          String
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  ProductSkuSize ProductSkuSize[]
+  id        String   @id @default(uuid())
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sizes")
-}
-
-model ProductSkuColor {
-  skuId   String
-  colorId String
-  sku     ProductSku @relation(fields: [skuId], references: [id])
-  color   Color      @relation(fields: [colorId], references: [id])
-
-  @@id([skuId, colorId])
-  @@map("productSkuColors")
-}
-
-model ProductSkuSize {
-  skuId  String
-  sizeId String
-  sku    ProductSku @relation(fields: [skuId], references: [id])
-  size   Size       @relation(fields: [sizeId], references: [id])
-
-  @@id([skuId, sizeId])
-  @@map("productSkuSizes")
 }
 
 model ProductTags {

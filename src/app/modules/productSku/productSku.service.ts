@@ -5,6 +5,8 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { productSkuSearchableFields } from './productSku.constant';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 // get all
 const getAll = async (
@@ -92,7 +94,72 @@ const createProductSku = async (
   return result;
 };
 
+// get single
+const getSingle = async (id: string): Promise<ProductSku | null> => {
+  const result = await prisma.productSku.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
+// update single
+const updateSingle = async (
+  id: string,
+  payload: Partial<ProductSku>
+): Promise<ProductSku | null> => {
+  // check is exist
+  const isExist = await prisma.productSku.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sku Not Found');
+  }
+
+  const result = await prisma.productSku.update({
+    where: {
+      id,
+    },
+    data: payload,
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Sku');
+  }
+
+  return result;
+};
+
+// delete single
+const deleteSingle = async (id: string): Promise<ProductSku | null> => {
+  // check is exist
+  const isExist = await prisma.productSku.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sku Not Found');
+  }
+
+  const result = await prisma.productSku.delete({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
 export const ProductSkuService = {
   createProductSku,
   getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
 };

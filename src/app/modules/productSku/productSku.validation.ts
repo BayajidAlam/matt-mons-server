@@ -11,9 +11,22 @@ const createProductSku = z.object({
     availableSize: z.array(z.string()).nonempty({
       message: 'At least one size is required',
     }),
+    quantity: z.string({
+      required_error: 'Quantity is required',
+    }),
+  }),
+});
+
+const updateProductSku = z.object({
+  body: z.object({
+    title: z.string().optional(),
+    availableColor: z.array(z.string()).optional(),
+    availableSize: z.array(z.string()).optional(),
+    quantity: z.string().optional(),
   }),
 });
 
 export const ProductSkuValidation = {
   createProductSku,
+  updateProductSku,
 };
