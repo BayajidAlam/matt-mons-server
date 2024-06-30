@@ -8,6 +8,13 @@ const createCategory = z.object({
   }),
 });
 
+const updateCategory = z.object({
+  body: z.object({
+    title: z.string().optional(),
+  }),
+});
+
 export const CategoryValidation = {
   createCategory,
+  updateCategory,
 };

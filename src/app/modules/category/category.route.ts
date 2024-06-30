@@ -34,4 +34,39 @@ router.post(
 
 
 
+// get single
+router.get(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  // ),
+  CategoryController.getSingle
+);
+
+// update single
+router.patch(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  validateRequest(CategoryValidation.updateCategory),
+  CategoryController.updateSingle
+);
+
+// delete single
+router.delete(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  CategoryController.deleteSingle
+);
+
 export const CategoryRoutes = router;

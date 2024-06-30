@@ -6,13 +6,14 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { categorySearchableFields } from './category.constant';
 import { ICategoryFilters } from './category.interface';
 import { Prisma } from '@prisma/client';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 // get all category
 const getAllCategory = async (
   filters: ICategoryFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Category[]>> => {
-  
   const { searchTerm } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -38,7 +39,7 @@ const getAllCategory = async (
     orderBy: {
       [sortBy]: sortOrder,
     },
-    skip, 
+    skip,
     take: limit,
   });
 
@@ -69,7 +70,72 @@ const createCategory = async (
   return result;
 };
 
+// get single
+const getSingle = async (id: string): Promise<Category | null> => {
+  const result = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
+// update single
+const updateSingle = async (
+  id: string,
+  payload: Partial<Category>
+): Promise<Category | null> => {
+  // check is exist
+  const isExist = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Category Not Found');
+  }
+
+  const result = await prisma.category.update({
+    where: {
+      id,
+    },
+    data: payload,
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Category');
+  }
+
+  return result;
+};
+
+// delete single
+const deleteSingle = async (id: string): Promise<Category | null> => {
+  // check is exist
+  const isExist = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Category Not Found');
+  }
+
+  const result = await prisma.category.delete({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
 export const CategoryService = {
   createCategory,
   getAllCategory,
+  getSingle,
+  updateSingle,
+  deleteSingle,
 };

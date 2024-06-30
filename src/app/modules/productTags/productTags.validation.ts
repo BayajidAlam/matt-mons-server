@@ -8,6 +8,13 @@ const createProductTagsValidation = z.object({
   }),
 });
 
+const updateProductTagsValidation = z.object({
+  body: z.object({
+    title: z.string().optional(),
+  }),
+});
+
 export const ProductTagsValidation = {
   createProductTagsValidation,
+  updateProductTagsValidation,
 };

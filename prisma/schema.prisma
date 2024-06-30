@@ -242,7 +242,7 @@ model Category {
 
 model ProductSku {
   id       String @id @default(uuid())
-  title    String
+  title    String @unique
   quantity String @default("0")
 
   availableColor String[]

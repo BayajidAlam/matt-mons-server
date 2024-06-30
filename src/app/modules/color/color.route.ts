@@ -64,4 +64,5 @@ router.delete(
   // ),
   ColorsController.deleteSingle
 );
+
 export const ColorsRoutes = router;
