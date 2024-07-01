@@ -5,6 +5,8 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { couponSearchableFields } from './cupon.constant';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 // get all
 const getAll = async (
@@ -64,6 +66,26 @@ const getAll = async (
   };
 };
 
+//create Coupon
+const createCoupon = async (CouponData: Coupon): Promise<Coupon | null> => {
+
+  const isShopExist = await prisma.shop.findUnique({
+    where: {
+      id: CouponData?.shopId,
+    },
+  });
+
+  if (!isShopExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Shop Not Found');
+  }
+
+  const result = await prisma.coupon.create({
+    data: CouponData,
+  });
+
+  return result;
+};
+
 // get single
 const getSingle = async (id: string): Promise<Coupon | null> => {
   const result = await prisma.coupon.findUnique({
@@ -74,60 +96,62 @@ const getSingle = async (id: string): Promise<Coupon | null> => {
   return result;
 };
 
-// // update single
-// const updateSingle = async (
-//   id: string,
-//   payload: Partial<Helper>
-// ): Promise<Helper | null> => {
-//   // check is exist
-//   const isExist = await prisma.helper.findUnique({
-//     where: {
-//       id,
-//     },
-//   });
+// update single
+const updateSingle = async (
+  id: string,
+  payload: Partial<Coupon>
+): Promise<Coupon | null> => {
+  // check is exist
+  const isExist = await prisma.coupon.findUnique({
+    where: {
+      id,
+    },
+  });
 
-//   if (!isExist) {
-//     throw new ApiError(httpStatus.NOT_FOUND, 'Helper Not Found');
-//   }
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Coupon Not Found');
+  }
 
-//   const result = await prisma.helper.update({
-//     where: {
-//       id,
-//     },
-//     data: payload,
-//   });
+  const result = await prisma.coupon.update({
+    where: {
+      id,
+    },
+    data: payload,
+  });
 
-//   if (!result) {
-//     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Helper');
-//   }
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Coupon');
+  }
 
-//   return result;
-// };
+  return result;
+};
 
-// // inactive
-// const inactive = async (id: string): Promise<Helper | null> => {
-//   // check is exist
-//   const isExist = await prisma.helper.findUnique({
-//     where: {
-//       id,
-//     },
-//   });
+// delete single
+const deleteSingle = async (id: string): Promise<Coupon | null> => {
+  // check is exist
+  const isExist = await prisma.coupon.findUnique({
+    where: {
+      id,
+    },
+  });
 
-//   if (!isExist) {
-//     throw new ApiError(httpStatus.NOT_FOUND, 'Helper Not Found');
-//   }
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Coupon Not Found');
+  }
 
-//   const result = await prisma.helper.update({
-//     where: {
-//       id,
-//     },
-//     data: { isActive: false },
-//   });
+  const result = await prisma.coupon.delete({
+    where: {
+      id,
+    },
+  });
 
-//   return result;
-// };
+  return result;
+};
 
 export const CouponService = {
+  createCoupon,
   getSingle,
   getAll,
+  updateSingle,
+  deleteSingle,
 };

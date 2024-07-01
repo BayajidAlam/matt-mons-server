@@ -179,7 +179,7 @@ model Shop {
 model Coupon {
   id             String   @id @default(uuid())
   shopId         String
-  couponName     String
+  couponName     String @unique
   discount       String
   shippingCharge String
   validTill      DateTime

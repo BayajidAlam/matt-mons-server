@@ -1,1 +1,3 @@
-// shop interface
+export type IShopFilters = {
+  searchTerm?: string;
+};

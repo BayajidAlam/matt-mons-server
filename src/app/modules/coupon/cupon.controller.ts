@@ -10,8 +10,10 @@ import pick from '../../../shared/pick';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
+
   const filters = pick(req.query, couponFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
+  
   const result = await CouponService.getAll(filters, paginationOptions);
 
   sendResponse<Coupon[]>(res, {
@@ -20,6 +22,18 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
     message: 'Coupons retrieved successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const createCoupon = catchAsync(async (req: Request, res: Response) => {
+  const shopData = req.body;
+  const result = await CouponService.createCoupon(shopData);
+
+  sendResponse<Coupon>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Coupon created Successfully',
+    data: result,
   });
 });
 
@@ -37,36 +51,39 @@ const getSingle = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// // update single
-// const updateSingle = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   const data = req.body;
+// update single
+const updateSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const data = req.body;
 
-//   const result = await HelperService.updateSingle(id, data);
+  const result = await CouponService.updateSingle(id, data);
 
-//   sendResponse<Helper>(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: 'Helper Updated Successfully',
-//     data: result,
-//   });
-// });
+  sendResponse<Coupon>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Coupon Updated Successfully',
+    data: result,
+  });
+});
 
-// // inactive
-// const inactive = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
+// delete
+const deleteSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
 
-//   const result = await HelperService.inactive(id);
+  const result = await CouponService.deleteSingle(id);
 
-//   sendResponse<Helper>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Helper Inactive successfully',
-//     data: result,
-//   });
-// });
+  sendResponse<Coupon>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Coupon Deleted successfully',
+    data: result,
+  });
+});
 
 export const CouponController = {
-  getSingle,
+  createCoupon,
   getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
 };
