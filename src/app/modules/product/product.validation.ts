@@ -15,23 +15,19 @@ const createProductValidation = z.object({
     productDetails: z.string({
       required_error: 'Product details are required',
     }),
-    productAdditionalInfo: z.string().optional(),
+    productAdditionalInfo: z.any(),
     minPrice: z.string({
       required_error: 'Minimum price is required',
     }),
     discountPrice: z.string().optional(),
     discountPercentage: z.string().optional(),
-    moneySaved: z.string().optional(),
-    isAvailable: z.boolean({
-      required_error: 'Availability status is required',
-    }),
     productSkuId: z.string({
       required_error: 'Product SKU ID is required',
     }),
     categoryId: z.string({
       required_error: 'Category ID is required',
     }),
-    productTagsId: z.array(z.string()).nonempty().optional()
+    productTagsId: z.array(z.string()).nonempty().optional(),
   }),
 });
 

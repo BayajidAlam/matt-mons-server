@@ -13,7 +13,6 @@ const getAll = async (
   filters: IProductFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Product[]>> => {
-  
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -78,6 +77,7 @@ const createProduct = async (ProductData: Product): Promise<Product | null> => {
     include: {
       Category: true,
       ProductSku: true,
+      Shop: true,
     },
   });
 

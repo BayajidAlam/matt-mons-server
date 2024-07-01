@@ -24,8 +24,8 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-  
   const ProductData = req.body;
+  console.log(ProductData, 'data');
   const result = await ProductService.createProduct(ProductData);
 
   sendResponse<Product>(res, {
@@ -38,5 +38,5 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
 export const ProductController = {
   createProduct,
-  getAll
+  getAll,
 };
