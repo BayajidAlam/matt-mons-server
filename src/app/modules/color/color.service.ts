@@ -10,6 +10,7 @@ import httpStatus from 'http-status';
 
 // get all users
 const getAll = async (
+  shopId: string,
   filters: IColorFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Color[]>> => {
@@ -17,7 +18,7 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions: Prisma.ColorWhereInput[] = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -31,7 +32,7 @@ const getAll = async (
   }
 
   const whereConditions: Prisma.ColorWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {};
+    andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
 
   const result = await prisma.color.findMany({
     where: whereConditions,

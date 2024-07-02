@@ -7,10 +7,8 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { productSkuSearchableFields } from './productSku.constant';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
+import { ExtendedProductSkuWhereInput } from './productSku.interface';
 
-type ExtendedProductSkuWhereInput = {
-  shopId?: string; 
-} & Prisma.ProductSkuWhereInput
 
 // get all
 const getAll = async (

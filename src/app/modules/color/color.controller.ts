@@ -10,10 +10,16 @@ import { ColorFilterableFields } from './color.constant';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ColorFilterableFields);
+  
+  const { shopId, ...colorData } = req.query;
+  const filters = pick(colorData, ColorFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await ProductColorService.getAll(filters, paginationOptions);
+  const result = await ProductColorService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<Color[]>(res, {
     statusCode: httpStatus.OK,

@@ -10,10 +10,15 @@ import { SizeFilterableFields } from './size.constant';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, SizeFilterableFields);
+  const { shopId, ...sizeData } = req.query;
+  const filters = pick(sizeData, SizeFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await ProductSizeService.getAll(filters, paginationOptions);
+  const result = await ProductSizeService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<Size[]>(res, {
     statusCode: httpStatus.OK,

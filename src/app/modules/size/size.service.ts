@@ -10,6 +10,7 @@ import { SizeSearchableFields } from './size.constant';
 
 // get all users
 const getAll = async (
+  shopId: string,
   filters: ISizeFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Color[]>> => {
@@ -18,21 +19,21 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+const andConditions: Prisma.SizeWhereInput[] = [{ shopId }];
 
-  if (searchTerm) {
-    andConditions.push({
-      OR: SizeSearchableFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
-    });
-  }
+if (searchTerm) {
+  andConditions.push({
+    OR: SizeSearchableFields.map(field => ({
+      [field]: {
+        contains: searchTerm,
+        mode: 'insensitive',
+      },
+    })),
+  } as Prisma.SizeWhereInput); 
+}
 
-  const whereConditions: Prisma.SizeWhereInput =
-    andConditions.length > 0 ? { AND: andConditions } : {};
+const whereConditions: Prisma.SizeWhereInput =
+  andConditions.length > 0 ? { AND: andConditions } : {};
 
   const result = await prisma.size.findMany({
     where: whereConditions,
@@ -60,9 +61,7 @@ const getAll = async (
 };
 
 //create
-const create = async (
-  productColorData: Size
-): Promise<Color | null> => {
+const create = async (productColorData: Size): Promise<Color | null> => {
   const result = await prisma.size.create({
     data: productColorData,
   });
