@@ -5,19 +5,21 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { productsSearchableFields } from './product.constant';
-// import ApiError from '../../../errors/ApiError';
-// import httpStatus from 'http-status';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
 // get all
 const getAll = async (
+  shopId: string,
   filters: IProductFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Product[]>> => {
+ 
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -96,7 +98,72 @@ const createProduct = async (ProductData: Product): Promise<Product | null> => {
   return result;
 };
 
+// get single
+const getSingle = async (id: string): Promise<Product | null> => {
+  const result = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
+// update single
+const updateSingle = async (
+  id: string,
+  payload: Partial<Product>
+): Promise<Product | null> => {
+  // check is exist
+  const isExist = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Product Not Found');
+  }
+
+  const result = await prisma.product.update({
+    where: {
+      id,
+    },
+    data: payload,
+  });
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Product');
+  }
+
+  return result;
+};
+
+// delete single
+const deleteSingle = async (id: string): Promise<Product | null> => {
+  // check is exist
+  const isExist = await prisma.product.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Product Not Found');
+  }
+
+  const result = await prisma.product.delete({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
 export const ProductService = {
   createProduct,
   getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
 };

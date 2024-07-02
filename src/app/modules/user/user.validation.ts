@@ -88,7 +88,7 @@ const createSellsManager = z.object({
         .optional(),
       nidNumber: z.string({ required_error: 'Nid Number is Required' }),
       isActive: z.boolean().optional(),
-      shopId: z.string().optional(),
+      shopId: z.string(),
     }),
   }),
 });

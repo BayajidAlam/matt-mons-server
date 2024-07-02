@@ -10,6 +10,7 @@ import httpStatus from 'http-status';
 
 // get all
 const getAll = async (
+  shopId: string,
   filters: ISellsManagerFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<SellsManager[]>> => {
@@ -17,7 +18,7 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions: Prisma.SellsManagerWhereInput[] = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({

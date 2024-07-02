@@ -10,9 +10,16 @@ import { sellsManagerFilterableFields } from './sellsManager.constant';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, sellsManagerFilterableFields);
+  const { shopId, ...managerData } = req.query;
+
+  const filters = pick(managerData, sellsManagerFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
-  const result = await SellsManagerService.getAll(filters, paginationOptions);
+
+  const result = await SellsManagerService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<SellsManager[]>(res, {
     statusCode: httpStatus.OK,
@@ -51,20 +58,6 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
-// // inactive
-// const inactive = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-
-//   const result = await HelperService.inactive(id);
-
-//   sendResponse<Helper>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Helper Inactive successfully',
-//     data: result,
-//   });
-// });
 
 // delete
 const deleteSingle = catchAsync(async (req: Request, res: Response) => {

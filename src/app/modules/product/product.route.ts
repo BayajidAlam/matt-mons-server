@@ -42,7 +42,7 @@ router.patch(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  validateRequest(ProductValidation.updateCoupon),
+  validateRequest(ProductValidation.updateProductValidation),
   ProductController.updateSingle
 );
 

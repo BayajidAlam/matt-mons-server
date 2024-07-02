@@ -10,11 +10,15 @@ import pick from '../../../shared/pick';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-
-  const filters = pick(req.query, couponFilterableFields);
+  const { shopId, ...couponData } = req.query;
+  const filters = pick(couponData, couponFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
-  
-  const result = await CouponService.getAll(filters, paginationOptions);
+
+  const result = await CouponService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<Coupon[]>(res, {
     statusCode: httpStatus.OK,

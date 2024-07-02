@@ -30,6 +30,23 @@ const createProductValidation = z.object({
   }),
 });
 
+const updateProductValidation = z.object({
+  body: z.object({
+    shopId: z.string().optional(),
+    productName: z.string().optional(),
+    productMainImage: z.string().optional(),
+    productAdditionalImages: z.array(z.string()).optional(),
+    productDetails: z.string().optional(),
+    productAdditionalInfo: z.any().optional(),
+    minPrice: z.string().optional(),
+    discountPrice: z.string().optional(),
+    productSkuId: z.string().optional(),
+    categoryId: z.string().optional(),
+    productTagsId: z.array(z.string()).nonempty().optional(),
+  }).partial(), // Makes all properties of the object optional
+});
+
 export const ProductValidation = {
   createProductValidation,
+  updateProductValidation
 };

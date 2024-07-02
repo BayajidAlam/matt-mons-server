@@ -10,6 +10,7 @@ import httpStatus from 'http-status';
 
 // get all
 const getAll = async (
+  shopId: string,
   filters: ICouponFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Coupon[]>> => {
@@ -17,7 +18,7 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions: Prisma.CouponWhereInput[] = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -31,11 +32,12 @@ const getAll = async (
   }
 
   if (Object.keys(filterData).length > 0) {
-    andConditions.push({
+    const filterConditions: Prisma.CouponWhereInput = {
       AND: Object.entries(filterData).map(([field, value]) => ({
         [field]: value === 'true' ? true : value === 'false' ? false : value,
       })),
-    });
+    };
+    andConditions.push(filterConditions);
   }
 
   const whereConditions: Prisma.CouponWhereInput =
@@ -68,7 +70,6 @@ const getAll = async (
 
 //create Coupon
 const createCoupon = async (CouponData: Coupon): Promise<Coupon | null> => {
-
   const isShopExist = await prisma.shop.findUnique({
     where: {
       id: CouponData?.shopId,

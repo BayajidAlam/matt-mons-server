@@ -10,9 +10,16 @@ import { ProductService } from './product.service';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, productsFilterableFields);
+  const { shopId, ...filterData } = req.query;
+
+  const filters = pick(filterData, productsFilterableFields);
+
   const paginationOptions = pick(req.query, paginationFields);
-  const result = await ProductService.getAll(filters, paginationOptions);
+  const result = await ProductService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<Product[]>(res, {
     statusCode: httpStatus.OK,
@@ -25,7 +32,7 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const ProductData = req.body;
-  console.log(ProductData, 'data');
+
   const result = await ProductService.createProduct(ProductData);
 
   sendResponse<Product>(res, {
@@ -40,12 +47,12 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 const getSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const result = await CouponService.getSingle(id);
+  const result = await ProductService.getSingle(id);
 
-  sendResponse<Coupon>(res, {
+  sendResponse<Product>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Seller retrieved successfully',
+    message: 'Product retrieved successfully',
     data: result,
   });
 });
@@ -55,12 +62,12 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const data = req.body;
 
-  const result = await CouponService.updateSingle(id, data);
+  const result = await ProductService.updateSingle(id, data);
 
-  sendResponse<Coupon>(res, {
+  sendResponse<Product>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Coupon Updated Successfully',
+    message: 'Product Updated Successfully',
     data: result,
   });
 });
@@ -69,18 +76,20 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
 const deleteSingle = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
-  const result = await CouponService.deleteSingle(id);
+  const result = await ProductService.deleteSingle(id);
 
-  sendResponse<Coupon>(res, {
+  sendResponse<Product>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Coupon Deleted successfully',
+    message: 'Product Deleted successfully',
     data: result,
   });
 });
 
-
 export const ProductController = {
   createProduct,
   getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
 };
