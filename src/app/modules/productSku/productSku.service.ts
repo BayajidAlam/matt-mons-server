@@ -8,8 +8,13 @@ import { productSkuSearchableFields } from './productSku.constant';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 
+type ExtendedProductSkuWhereInput = {
+  shopId?: string; 
+} & Prisma.ProductSkuWhereInput
+
 // get all
 const getAll = async (
+  shopId: string,
   filters: IProductFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<ProductSku[]>> => {
@@ -17,7 +22,7 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions: ExtendedProductSkuWhereInput[] = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -55,6 +60,7 @@ const getAll = async (
     });
   }
 
+  // Correctly typed whereConditions for ProductSku
   const whereConditions: Prisma.ProductSkuWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 

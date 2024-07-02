@@ -43,7 +43,7 @@ const updateProductValidation = z.object({
     productSkuId: z.string().optional(),
     categoryId: z.string().optional(),
     productTagsId: z.array(z.string()).nonempty().optional(),
-  }).partial(), // Makes all properties of the object optional
+  }).partial(),
 });
 
 export const ProductValidation = {

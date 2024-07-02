@@ -10,10 +10,16 @@ import { paginationFields } from '../../../constaints/pagination';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, productSkuFilterableFields);
+  
+  const { shopId, ...skuData } = req.query;
+  const filters = pick(skuData, productSkuFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await ProductSkuService.getAll(filters, paginationOptions);
+  const result = await ProductSkuService.getAll(
+    shopId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<ProductSku[]>(res, {
     statusCode: httpStatus.OK,

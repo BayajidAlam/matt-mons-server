@@ -14,12 +14,12 @@ const getAll = async (
   filters: IProductFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Product[]>> => {
- 
+  
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [{ shopId }];
+  const andConditions: Prisma.ProductWhereInput[] = [{ shopId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -33,19 +33,19 @@ const getAll = async (
   }
 
   if (Object.keys(filterData).length > 0) {
+    const filterConditions: Prisma.ProductWhereInput[] = Object.entries(
+      filterData
+    ).map(([field, value]) => ({
+      [field]: value,
+    }));
+
     andConditions.push({
-      AND: Object.entries(filterData).map(([field, value]) => {
-        if (field === 'isAvailable') {
-          return { [field]: value };
-        }
-        return { [field]: value };
-      }),
+      AND: filterConditions,
     });
   }
 
   const whereConditions: Prisma.ProductWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
-
   const result = await prisma.product.findMany({
     include: {
       ProductSku: true,

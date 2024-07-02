@@ -14,7 +14,7 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 
   const filters = pick(filterData, productsFilterableFields);
 
-  const paginationOptions = pick(req.query, paginationFields);
+  const paginationOptions = pick( req.query, paginationFields);
   const result = await ProductService.getAll(
     shopId as string,
     filters,

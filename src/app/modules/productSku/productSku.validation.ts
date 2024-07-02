@@ -14,6 +14,9 @@ const createProductSku = z.object({
     quantity: z.string({
       required_error: 'Quantity is required',
     }),
+    shopId: z.string({
+      required_error: 'ShopId is required',
+    }),
   }),
 });
 
@@ -23,6 +26,7 @@ const updateProductSku = z.object({
     availableColor: z.array(z.string()).optional(),
     availableSize: z.array(z.string()).optional(),
     quantity: z.string().optional(),
+    shopId: z.string().optional(),
   }),
 });
 

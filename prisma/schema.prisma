@@ -99,8 +99,8 @@ model SellsManager {
   nidNumber              String
   isActive               Boolean @default(true)
 
-  user   User    @relation(fields: [userId], references: [id])
-  Shop   Shop?   @relation(fields: [shopId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  Shop   Shop?  @relation(fields: [shopId], references: [id])
   shopId String
 
   createdAt DateTime @default(now())
@@ -170,9 +170,14 @@ model Shop {
   isVerified   Boolean        @default(false)
   products     Product[]
   seller       Seller         @relation(fields: [sellerId], references: [id])
-  cupon        Coupon[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+
+  cupons      Coupon[]
+  productSku ProductSku[]
+  colors     Color[]
+  sizes      Size[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("shop")
 }
@@ -249,29 +254,39 @@ model ProductSku {
 
   availableColor String[]
   availableSize  String[]
+  shopId         String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   Product Product[]
+  Shop    Shop      @relation(fields: [shopId], references: [id])
 
   @@map("sku")
 }
 
 model Color {
-  id        String   @id @default(uuid())
-  title     String   @unique
+  id     String @id @default(uuid())
+  title  String @unique
+  shopId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Shop      Shop     @relation(fields: [shopId], references: [id])
 
   @@map("colors")
 }
 
 model Size {
-  id        String   @id @default(uuid())
-  title     String
+  id     String @id @default(uuid())
+  title  String
+  shopId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  Shop      Shop     @relation(fields: [shopId], references: [id])
 
   @@map("sizes")
 }
