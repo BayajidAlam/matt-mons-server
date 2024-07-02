@@ -45,6 +45,11 @@ const getAll = async (
     andConditions.length > 0 ? { AND: andConditions } : {};
 
   const result = await prisma.product.findMany({
+    include: {
+      ProductSku: true,
+      Category: true,
+      Shop: true,
+    },
     where: whereConditions,
     orderBy: {
       [sortBy]: sortOrder,
@@ -70,6 +75,13 @@ const getAll = async (
 };
 
 const createProduct = async (ProductData: Product): Promise<Product | null> => {
+  const moneySaved =
+    Number(ProductData.minPrice) - Number(ProductData.discountPrice);
+  const discountPercentage = (moneySaved / Number(ProductData.minPrice)) * 100;
+
+  ProductData.moneySaved = String(moneySaved);
+  ProductData.discountPercentage = String(discountPercentage);
+
   console.log(ProductData, 'Product Data');
 
   const result = await prisma.product.create({

@@ -209,7 +209,6 @@ model Product {
   discountPrice           String
   discountPercentage      String
   moneySaved              String
-  isAvailable             Boolean
 
   createdBy    String
   categoryId   String

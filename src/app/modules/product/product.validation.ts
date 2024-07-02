@@ -20,7 +20,6 @@ const createProductValidation = z.object({
       required_error: 'Minimum price is required',
     }),
     discountPrice: z.string().optional(),
-    discountPercentage: z.string().optional(),
     productSkuId: z.string({
       required_error: 'Product SKU ID is required',
     }),

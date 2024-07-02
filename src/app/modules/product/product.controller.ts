@@ -36,6 +36,50 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get single
+const getSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await CouponService.getSingle(id);
+
+  sendResponse<Coupon>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Seller retrieved successfully',
+    data: result,
+  });
+});
+
+// update single
+const updateSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const data = req.body;
+
+  const result = await CouponService.updateSingle(id, data);
+
+  sendResponse<Coupon>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Coupon Updated Successfully',
+    data: result,
+  });
+});
+
+// delete
+const deleteSingle = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await CouponService.deleteSingle(id);
+
+  sendResponse<Coupon>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Coupon Deleted successfully',
+    data: result,
+  });
+});
+
+
 export const ProductController = {
   createProduct,
   getAll,
