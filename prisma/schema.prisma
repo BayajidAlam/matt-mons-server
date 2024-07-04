@@ -26,6 +26,7 @@ model User {
   receivedMessages Conversation[] @relation(name: "Receiver")
 
   Order Order[]
+  cart  Cart[]
 
   @@map("users")
 }
@@ -171,7 +172,7 @@ model Shop {
   products     Product[]
   seller       Seller         @relation(fields: [sellerId], references: [id])
 
-  cupons      Coupon[]
+  cupons     Coupon[]
   productSku ProductSku[]
   colors     Color[]
   sizes      Size[]
@@ -229,7 +230,7 @@ model Product {
   orderId      String?
   orderOrderId String?
   Order        Order?     @relation(fields: [orderId], references: [id])
-  Cart         Cart?      @relation(fields: [cartId], references: [id])
+  cart         Cart[]
   cartId       String?
   ProductSku   ProductSku @relation(fields: [productSkuId], references: [id])
 
@@ -267,27 +268,27 @@ model ProductSku {
 
 model Color {
   id     String @id @default(uuid())
-  title  String 
+  title  String
   shopId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Shop      Shop     @relation(fields: [shopId], references: [id])
+  Shop Shop @relation(fields: [shopId], references: [id])
 
   @@map("colors")
 }
 
 model Size {
-  id     String @id @default(uuid())
-  title  String
-  
+  id    String @id @default(uuid())
+  title String
+
   shopId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Shop      Shop     @relation(fields: [shopId], references: [id])
+  Shop Shop @relation(fields: [shopId], references: [id])
 
   @@map("sizes")
 }
@@ -325,13 +326,15 @@ model Order {
 }
 
 model Cart {
-  id        String    @id @default(uuid())
+  id        String @id @default(uuid())
   userId    String
-  productId String[]
-  products  Product[]
+  productId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [productId], references: [id])
 
   @@map("carts")
 }

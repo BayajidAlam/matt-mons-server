@@ -26,4 +26,25 @@ router.get(
   AuthController.refreshToken
 );
 
+// router.post(
+//   '/change-password',
+//   validateRequest(AuthValidation.changePasswordZodSchema),
+//   // auth(
+//   //   ENUM_USER_ROLE.SUPER_ADMIN,
+//   //   ENUM_USER_ROLE.ADMIN,
+//   //   ENUM_USER_ROLE.FACULTY,
+//   //   ENUM_USER_ROLE.STUDENT
+//   // ),
+//   AuthController.changePassword
+// );
+// router.post(
+//   '/forgot-password',
+//   AuthController.forgotPass
+// );
+
+// router.post(
+//   '/reset-password',
+//   AuthController.resetPassword
+// );
+
 export const AuthRoutes = router;

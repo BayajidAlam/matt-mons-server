@@ -3,13 +3,28 @@ import validateRequest from '../../middlewares/validateRequest';
 import { ProductController } from './product.controller';
 import { ProductValidation } from './product.validation';
 
-
 const router = express.Router();
-// get all
+
+// get all product of a shop
 router.get(
   '/',
   // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
   ProductController.getAll
+);
+
+// get all product of a seller
+router.get(
+  '/daily-best-sell',
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
+  ProductController.getAllDailyBestSell
+);
+
+
+// get all product of a seller
+router.get(
+  '/product-feed',
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
+  ProductController.getAllFeedProduct
 );
 
 // create shop
@@ -45,7 +60,6 @@ router.patch(
   validateRequest(ProductValidation.updateProductValidation),
   ProductController.updateSingle
 );
-
 
 // delete single
 router.delete(

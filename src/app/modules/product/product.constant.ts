@@ -5,4 +5,11 @@ export const productsSearchableFields = [
   'discountPercentage',
 ];
 
-export const productsFilterableFields = ['searchTerm', 'isAvailable'];
+export const productsFilterableFields = [
+  'searchTerm',
+  'isAvailable',
+  'color',
+  'size',
+  'category',
+  'discountPrice',
+];

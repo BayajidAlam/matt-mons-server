@@ -14,9 +14,7 @@ const createColor = z.object({
 const updateColor = z.object({
   body: z.object({
     title: z.string().optional(),
-  }),
-  shopId: z.object({
-    title: z.string().optional(),
+    shopId: z.string().optional(),
   }),
 });
 

@@ -14,6 +14,7 @@ const getAll = async (
   filters: ISellsManagerFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<SellsManager[]>> => {
+
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -107,49 +108,36 @@ const updateSingle = async (
   return result;
 };
 
-// // inactive
-// const inactive = async (id: string): Promise<Helper | null> => {
-//   // check is exist
-//   const isExist = await prisma.helper.findUnique({
-//     where: {
-//       id,
-//     },
-//   });
 
-//   if (!isExist) {
-//     throw new ApiError(httpStatus.NOT_FOUND, 'Helper Not Found');
-//   }
-
-//   const result = await prisma.helper.update({
-//     where: {
-//       id,
-//     },
-//     data: { isActive: false },
-//   });
-
-//   return result;
-// };
-
-// delete single
 const deleteSingle = async (id: string): Promise<SellsManager | null> => {
-  // check is exist
-  const isExist = await prisma.sellsManager.findUnique({
-    where: {
-      id,
-    },
+  return await prisma.$transaction(async (prisma) => {
+    // Check if the SellsManager exists
+    const isExist = await prisma.sellsManager.findUnique({
+      where: {
+        id,
+      },
+    });
+    
+    if (!isExist) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Sells Manager Not Found');
+    }
+
+    // Delete the SellsManager
+    const result = await prisma.sellsManager.delete({
+      where: {
+        id,
+      },
+    });
+
+    // Delete the associated User
+    await prisma.user.delete({
+      where: {
+        id: isExist.userId,
+      },
+    });
+
+    return result;
   });
-
-  if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Sells Manager Not Found');
-  }
-
-  const result = await prisma.sellsManager.delete({
-    where: {
-      id,
-    },
-  });
-
-  return result;
 };
 
 export const SellsManagerService = {

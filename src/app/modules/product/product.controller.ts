@@ -14,7 +14,7 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 
   const filters = pick(filterData, productsFilterableFields);
 
-  const paginationOptions = pick( req.query, paginationFields);
+  const paginationOptions = pick(req.query, paginationFields);
   const result = await ProductService.getAll(
     shopId as string,
     filters,
@@ -25,6 +25,46 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Products retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+// get all daily best sell
+const getAllDailyBestSell = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, productsFilterableFields);
+  const paginationOptions = pick(req.query, paginationFields);
+
+  const result = await ProductService.getAllTodayBestSell(
+    filters,
+    paginationOptions
+  );
+
+  sendResponse<Product[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Today best sell products retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+// get all product to show on feed or products page
+const getAllFeedProduct = catchAsync(async (req: Request, res: Response) => {
+
+  const filters = pick(req.query, productsFilterableFields);
+  const paginationOptions = pick(req.query, paginationFields);
+  console.log(req.query, 'query');
+
+  const result = await ProductService.getAllFeedProduct(
+    filters,
+    paginationOptions
+  );
+
+  sendResponse<Product[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Today best sell products retrieved successfully',
     meta: result.meta,
     data: result.data,
   });
@@ -89,6 +129,8 @@ const deleteSingle = catchAsync(async (req: Request, res: Response) => {
 export const ProductController = {
   createProduct,
   getAll,
+  getAllDailyBestSell,
+  getAllFeedProduct,
   getSingle,
   updateSingle,
   deleteSingle,
