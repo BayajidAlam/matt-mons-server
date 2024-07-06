@@ -8,12 +8,16 @@ const createCart = z.object({
     productId: z.string({
       required_error: 'ProductId is required',
     }),
+    quantity: z.number({
+      required_error: 'Quantity is required',
+    }),
   }),
 });
 
 const updateCart = z.object({
   userId: z.string().optional(),
   productId: z.string().optional(),
+  quantity: z.number().optional(),
 });
 
 export const CartValidation = {

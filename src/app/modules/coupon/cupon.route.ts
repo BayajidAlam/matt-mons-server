@@ -29,6 +29,15 @@ router.post(
   CouponController.createCoupon
 );
 
+// get single
+router.get(
+  '/title',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  // ),
+  CouponController.getCouponByTitle
+);
 
 // get single
 router.get(
@@ -39,6 +48,8 @@ router.get(
   // ),
   CouponController.getSingle
 );
+
+
 
 // update single
 router.patch(

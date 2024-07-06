@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
-import {  Order } from '@prisma/client';
+import { Order } from '@prisma/client';
 import { paginationFields } from '../../../constaints/pagination';
 import pick from '../../../shared/pick';
 import { orderFilterableFields } from './order.constant';
@@ -10,11 +10,16 @@ import { OrderService } from './order.service';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
+  const { userId, ...orderData } = req.query;
 
-  const filters = pick(req.query, orderFilterableFields);
+  const filters = pick(orderData, orderFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await OrderService.getAll(filters, paginationOptions);
+  const result = await OrderService.getAll(
+    userId as string,
+    filters,
+    paginationOptions
+  );
 
   sendResponse<Order[]>(res, {
     statusCode: httpStatus.OK,
@@ -22,6 +27,19 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
     message: 'Orders retrieved successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+//create
+const createOrder = catchAsync(async (req: Request, res: Response) => {
+  const orderData = req.body;
+  const result = await OrderService.createOrder(orderData);
+
+  sendResponse<Order>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Order created Successfully',
+    data: result,
   });
 });
 
@@ -71,4 +89,5 @@ const getSingle = catchAsync(async (req: Request, res: Response) => {
 export const OrderController = {
   getSingle,
   getAll,
+  createOrder,
 };

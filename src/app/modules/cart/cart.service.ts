@@ -1,4 +1,4 @@
-import { Cart, Prisma } from '@prisma/client';
+import { Cart, Prisma, UserRole } from '@prisma/client';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
@@ -69,6 +69,15 @@ const getAll = async (
 
 //create
 const createCart = async (CartData: Cart): Promise<Cart | null> => {
+  const isCustomer = await prisma.user.findUnique({
+    where: {
+      id: CartData.userId,
+    },
+  });
+  if (isCustomer?.role != UserRole.customer) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You can not add to cart');
+  }
+  
   const isSameProductAddedToCart = await prisma.cart.findFirst({
     where: {
       productId: CartData.productId,

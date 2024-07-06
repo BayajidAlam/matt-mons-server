@@ -8,6 +8,7 @@ import { orderSearchableFields } from './order.constant';
 
 // get all
 const getAll = async (
+  userId: string,
   filters: IOrderFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Order[]>> => {
@@ -15,7 +16,7 @@ const getAll = async (
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
-  const andConditions = [];
+  const andConditions: Prisma.OrderWhereInput[] = [{ userId }];
 
   if (searchTerm) {
     andConditions.push({
@@ -38,7 +39,6 @@ const getAll = async (
 
   const whereConditions: Prisma.OrderWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
-
   const result = await prisma.order.findMany({
     where: whereConditions,
     orderBy: {
@@ -64,6 +64,23 @@ const getAll = async (
   };
 };
 
+//create
+const createOrder = async (orderData: Order): Promise<Order | null> => {
+  console.log(orderData, 'order data');
+
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      id: orderData.userId,
+    },
+  });
+
+  console.log(isUserExist);
+  // const result = await prisma.order.create({
+  //   data: orderData,
+  // });
+
+  // return result;
+};
 
 // get single
 const getSingle = async (id: string): Promise<Order | null> => {
@@ -131,4 +148,5 @@ const getSingle = async (id: string): Promise<Order | null> => {
 export const OrderService = {
   getSingle,
   getAll,
+  createOrder,
 };

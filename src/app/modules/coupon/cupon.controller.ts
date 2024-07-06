@@ -50,7 +50,22 @@ const getSingle = catchAsync(async (req: Request, res: Response) => {
   sendResponse<Coupon>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Seller retrieved successfully',
+    message: 'coupon retrieved successfully',
+    data: result,
+  });
+});
+
+// get single by title
+const getCouponByTitle = catchAsync(async (req: Request, res: Response) => {
+  const couponName = req.query.couponName;
+  const result = await CouponService.getCouponByTitle(
+    couponName as string
+  );
+
+  sendResponse<Coupon>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Coupon retrieved successfully',
     data: result,
   });
 });
@@ -88,6 +103,7 @@ export const CouponController = {
   createCoupon,
   getAll,
   getSingle,
+  getCouponByTitle,
   updateSingle,
   deleteSingle,
 };

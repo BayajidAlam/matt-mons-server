@@ -97,6 +97,19 @@ const getSingle = async (id: string): Promise<Coupon | null> => {
   return result;
 };
 
+//get single by title
+const getCouponByTitle = async (
+  title: string
+): Promise<Coupon | null> => {
+  console.log(title)
+  const result = await prisma.coupon.findUnique({
+    where: {
+      couponName: title,
+    },
+  });
+  return result;
+};
+
 // update single
 const updateSingle = async (
   id: string,
@@ -152,6 +165,7 @@ const deleteSingle = async (id: string): Promise<Coupon | null> => {
 export const CouponService = {
   createCoupon,
   getSingle,
+  getCouponByTitle,
   getAll,
   updateSingle,
   deleteSingle,

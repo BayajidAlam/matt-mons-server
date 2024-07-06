@@ -22,8 +22,8 @@ model User {
   customer     Customer?
   sellsManager SellsManager?
 
-  sentMessages     Conversation[] @relation(name: "Sender")
-  receivedMessages Conversation[] @relation(name: "Receiver")
+  sentMessages   Conversation[] @relation(name: "Sender")
+  placedMessages Conversation[] @relation(name: "Receiver")
 
   Order Order[]
   cart  Cart[]
@@ -221,6 +221,9 @@ model Product {
   Category     Category @relation(fields: [categoryId], references: [id])
   productSkuId String
 
+  paymentModeId String
+  paymentMode   PaymentMode @relation(fields: [paymentModeId], references: [id])
+
   productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
 
@@ -235,6 +238,19 @@ model Product {
   ProductSku   ProductSku @relation(fields: [productSkuId], references: [id])
 
   @@map("product")
+}
+
+model PaymentMode {
+  id    String @id @default(uuid())
+  title String @unique
+
+  Product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Order     Order[]
+
+  @@map("paymentMode")
 }
 
 model Category {
@@ -303,6 +319,20 @@ model ProductTags {
   @@map("tags")
 }
 
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [productId], references: [id])
+
+  @@map("carts")
+}
+
 model Order {
   id                     String      @id @default(uuid())
   userId                 String
@@ -317,32 +347,23 @@ model Order {
   shippingCharge         String
   tax                    String
   total                  String
-  orderStatus            OrderStatus @default(received)
+  orderStatus            OrderStatus @default(placed)
+  paymentMode            PaymentMode @relation(fields: [paymentModeId], references: [id])
+  paidAmount             Int
+  dueAmount              Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  paymentModeId String
 
   @@map("orders")
-}
-
-model Cart {
-  id        String @id @default(uuid())
-  userId    String
-  productId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  User    User    @relation(fields: [userId], references: [id])
-  Product Product @relation(fields: [productId], references: [id])
-
-  @@map("carts")
 }
 
 model WishList {
   id        String @id @default(uuid())
   userId    String
   productId String
+  quantity  Int    @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -378,10 +399,10 @@ enum UserRole {
 }
 
 enum OrderStatus {
-  received
-  on_warhouse
-  on_curier
-  shipped
-  handovered
-  canceled
+  placed
+  payment_accepted
+  delivered_to_curier
+  curier_wareshouse
+  being_delivered
+  delivered
 }
