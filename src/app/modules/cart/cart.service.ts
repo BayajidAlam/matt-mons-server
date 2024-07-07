@@ -13,7 +13,7 @@ const getAll = async (
   userId: string,
   filters: ICartFilters,
   paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<Cart[]>> => {
+): Promise<IGenericResponse<any>> => {
   const { searchTerm } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -34,7 +34,7 @@ const getAll = async (
   const whereConditions: Prisma.CartWhereInput =
     andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
 
-  const result = await prisma.cart.findMany({
+  const cartItems = await prisma.cart.findMany({
     where: whereConditions,
     include: {
       Product: {
@@ -56,6 +56,14 @@ const getAll = async (
   });
   const totalPage = Math.ceil(total / limit);
 
+  const subTotal = cartItems?.reduce(
+    (total, item) => total + Number(item.Product.discountPrice) * item.quantity,
+    0
+  );
+  const shipping = 90;
+  const taxAmount = 0.015 * subTotal;
+  const totalPayAble = subTotal + shipping + taxAmount;
+
   return {
     meta: {
       page,
@@ -63,7 +71,13 @@ const getAll = async (
       total,
       totalPage,
     },
-    data: result,
+    data: {
+      cartItems,
+      subTotal,
+      shipping,
+      taxAmount,
+      total: totalPayAble,
+    },
   };
 };
 
@@ -77,7 +91,7 @@ const createCart = async (CartData: Cart): Promise<Cart | null> => {
   if (isCustomer?.role != UserRole.customer) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You can not add to cart');
   }
-  
+
   const isSameProductAddedToCart = await prisma.cart.findFirst({
     where: {
       productId: CartData.productId,
@@ -106,34 +120,67 @@ const getSingle = async (id: string): Promise<Cart | null> => {
   return result;
 };
 
-// update single
-const updateSingle = async (
-  id: string,
-  payload: Partial<Cart>
-): Promise<Cart | null> => {
-  // check is exist
-  const isExist = await prisma.cart.findUnique({
+//update or increment quantity
+const incrementQuantity = async (id: string): Promise<Cart | null> => {
+  const cartItem = await prisma.cart.findUnique({
     where: {
       id,
     },
   });
 
-  if (!isExist) {
+  if (!cartItem) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Cart Not Found');
   }
 
-  const result = await prisma.cart.update({
+  const updatedCartItem = await prisma.cart.update({
     where: {
       id,
     },
-    data: payload,
+    data: {
+      quantity: cartItem.quantity + 1,
+    },
   });
 
-  if (!result) {
+  if (!updatedCartItem) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Cart');
   }
 
-  return result;
+  return updatedCartItem;
+};
+
+// update or decrement quantity
+const decrementQuantity = async (id: string): Promise<Cart | null> => {
+  const cartItem = await prisma.cart.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!cartItem) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Cart Not Found');
+  }
+
+  if (cartItem.quantity <= 1) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Cannot decrement quantity below 1'
+    );
+  }
+
+  const updatedCartItem = await prisma.cart.update({
+    where: {
+      id,
+    },
+    data: {
+      quantity: cartItem.quantity - 1,
+    },
+  });
+
+  if (!updatedCartItem) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Cart');
+  }
+
+  return updatedCartItem;
 };
 
 // delete single
@@ -162,6 +209,7 @@ export const CartService = {
   createCart,
   getAll,
   getSingle,
-  updateSingle,
+  incrementQuantity,
+  decrementQuantity,
   deleteSingle,
 };

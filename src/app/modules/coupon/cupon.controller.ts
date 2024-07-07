@@ -57,10 +57,9 @@ const getSingle = catchAsync(async (req: Request, res: Response) => {
 
 // get single by title
 const getCouponByTitle = catchAsync(async (req: Request, res: Response) => {
-  const couponName = req.query.couponName;
-  const result = await CouponService.getCouponByTitle(
-    couponName as string
-  );
+  const { couponName } = req.params;
+  
+  const result = await CouponService.getCouponByTitle(couponName as string);
 
   sendResponse<Coupon>(res, {
     statusCode: httpStatus.OK,

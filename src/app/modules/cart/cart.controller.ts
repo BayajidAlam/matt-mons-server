@@ -10,7 +10,6 @@ import { CartService } from './cart.service';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  
   const { userId, ...CartData } = req.query;
   const filters = pick(CartData, CartFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
@@ -21,7 +20,7 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
     paginationOptions
   );
 
-  sendResponse<Cart[]>(res, {
+  sendResponse<any>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Cart retrieved successfully',
@@ -32,7 +31,6 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 
 //create
 const createCart = catchAsync(async (req: Request, res: Response) => {
-  
   const CartData = req.body;
   const result = await CartService.createCart(CartData);
 
@@ -59,16 +57,29 @@ const getSingle = catchAsync(async (req: Request, res: Response) => {
 });
 
 // update single
-const updateSingle = catchAsync(async (req: Request, res: Response) => {
+const incrementQuantity = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const data = req.body;
 
-  const result = await CartService.updateSingle(id, data);
+  const result = await CartService.incrementQuantity(id);
 
   sendResponse<Cart>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Cart Updated Successfully',
+    message: 'Quantity increment Successfully',
+    data: result,
+  });
+});
+
+// update single
+const decrementQuantity = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await CartService.decrementQuantity(id);
+
+  sendResponse<Cart>(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Quantity decrement Successfully',
     data: result,
   });
 });
@@ -91,6 +102,7 @@ export const CartController = {
   createCart,
   getAll,
   getSingle,
-  updateSingle,
+  incrementQuantity,
+  decrementQuantity,
   deleteSingle,
 };

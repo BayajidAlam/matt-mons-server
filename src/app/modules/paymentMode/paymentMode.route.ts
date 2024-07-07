@@ -1,7 +1,7 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { CartController } from './cart.controller';
-import { CartValidation } from './cart.validation';
+import { PayModeController } from './paymentMode.controller';
+import { PayModeValidation } from './paymentMode.validation';
 // import auth from '../../middlewares/auth';
 // import { ENUM_USER_ROLE } from '../../../enums/user';
 
@@ -16,18 +16,18 @@ router.get(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  CartController.getAll
+  PayModeController.getAll
 );
 
-// create
+// create 
 router.post(
-  '/add-to-cart',
+  '/create-color',
   // auth(
   //   ENUM_Shop_ROLE.SUPER_ADMIN,
   //   ENUM_Shop_ROLE.ADMIN,
   // ),
-  validateRequest(CartValidation.createCart),
-  CartController.createCart
+  validateRequest(PayModeValidation.createPayMode),
+  PayModeController.createColor
 );
 
 // get single
@@ -37,33 +37,20 @@ router.get(
   //   ENUM_USER_ROLE.SUPER_ADMIN,
   //   ENUM_USER_ROLE.ADMIN,
   // ),
-  CartController.getSingle
+  PayModeController.getSingle
 );
 
 // update single
 router.patch(
-  '/increment/:id',
+  '/:id',
   // auth(
   //   ENUM_USER_ROLE.SUPER_ADMIN,
   //   ENUM_USER_ROLE.ADMIN,
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  validateRequest(CartValidation.updateCart),
-  CartController.incrementQuantity
-);
-
-// update single
-router.patch(
-  '/decrement/:id',
-  // auth(
-  //   ENUM_USER_ROLE.SUPER_ADMIN,
-  //   ENUM_USER_ROLE.ADMIN,
-  //   ENUM_USER_ROLE.DRIVER,
-  //   ENUM_USER_ROLE.HELPER
-  // ),
-  validateRequest(CartValidation.updateCart),
-  CartController.decrementQuantity
+  validateRequest(PayModeValidation.updatePayMode),
+  PayModeController.updateSingle
 );
 
 // delete single
@@ -75,7 +62,7 @@ router.delete(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  CartController.deleteSingle
+  PayModeController.deleteSingle
 );
 
-export const CartRoutes = router;
+export const PayModeRoutes = router;

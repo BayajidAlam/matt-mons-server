@@ -8,9 +8,11 @@ const createCart = z.object({
     productId: z.string({
       required_error: 'ProductId is required',
     }),
-    quantity: z.number({
-      required_error: 'Quantity is required',
-    }),
+    quantity: z
+      .number({
+        required_error: 'Quantity is required',
+      })
+      .default(1),
   }),
 });
 

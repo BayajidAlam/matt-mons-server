@@ -1,7 +1,6 @@
-import { IGenericErrorMessage } from "./error";
+import { IGenericErrorMessage } from './error';
 
-
-export type IGenericResponse<T> = {
+export type IGenericResponse<T, U = undefined> = {
   meta: {
     page: number;
     limit: number;
@@ -9,6 +8,7 @@ export type IGenericResponse<T> = {
     totalPage: number;
   };
   data: T;
+  cartCalculation?: U;
 };
 
 export type IGenericErrorResponse = {

@@ -196,6 +196,7 @@ model Coupon {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Order     Order[]
 
   @@map("coupon")
 }
@@ -221,9 +222,6 @@ model Product {
   Category     Category @relation(fields: [categoryId], references: [id])
   productSkuId String
 
-  paymentModeId String
-  paymentMode   PaymentMode @relation(fields: [paymentModeId], references: [id])
-
   productTags      String[]
   ReviewAndRatings ReviewAndRatings[]
 
@@ -240,18 +238,18 @@ model Product {
   @@map("product")
 }
 
-model PaymentMode {
-  id    String @id @default(uuid())
-  title String @unique
+// model PaymentMode {
+//   id    String @id @default(uuid())
+//   title String @unique
 
-  Product Product[]
+//   Product Product[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Order     Order[]
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   Order     Order[]
 
-  @@map("paymentMode")
-}
+//   @@map("paymentMode")
+// }
 
 model Category {
   id      String    @id @default(uuid())
@@ -348,13 +346,16 @@ model Order {
   tax                    String
   total                  String
   orderStatus            OrderStatus @default(placed)
-  paymentMode            PaymentMode @relation(fields: [paymentModeId], references: [id])
-  paidAmount             Int
-  dueAmount              Int
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  paymentModeId String
+  cuponId String?
+  cupon   Coupon? @relation(fields: [couponId], references: [id])
+
+  paidAmount Int
+  dueAmount  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  couponId  String
 
   @@map("orders")
 }

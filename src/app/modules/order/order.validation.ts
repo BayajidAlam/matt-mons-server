@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentMode } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 import { z } from 'zod';
 
 const createOrder = z.object({
@@ -21,7 +21,7 @@ const createOrder = z.object({
     tax: z.string(),
     total: z.string(),
     orderStatus: z.nativeEnum(OrderStatus).default('received'),
-    paymentMode: z.nativeEnum(PaymentMode),
+    paymentMode: z.string({ required_error: 'payment mode is required' }),
     paidAmount: z.number({ required_error: 'Paid amount is required' }),
     dueAmount: z.number({ required_error: ' Due amount is required' }),
   }),
@@ -46,7 +46,7 @@ const updateOrder = z.object({
     tax: z.string().optional(),
     total: z.string().optional(),
     orderStatus: z.nativeEnum(OrderStatus).optional(),
-    paymentMode: z.nativeEnum(PaymentMode).optional(),
+    paymentMode: z.string().optional(),
     paidAmount: z.number().optional(),
     dueAmount: z.number().optional(),
   }),

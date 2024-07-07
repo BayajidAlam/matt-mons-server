@@ -3,7 +3,6 @@ import { CouponController } from './cupon.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { CouponValidation } from './cupon.validation';
 
-
 const router = express.Router();
 
 // get all
@@ -31,7 +30,7 @@ router.post(
 
 // get single
 router.get(
-  '/title',
+  '/title/:couponName',
   // auth(
   //   ENUM_USER_ROLE.SUPER_ADMIN,
   //   ENUM_USER_ROLE.ADMIN,
@@ -49,8 +48,6 @@ router.get(
   CouponController.getSingle
 );
 
-
-
 // update single
 router.patch(
   '/:id',
@@ -63,7 +60,6 @@ router.patch(
   validateRequest(CouponValidation.updateCoupon),
   CouponController.updateSingle
 );
-
 
 // delete single
 router.delete(

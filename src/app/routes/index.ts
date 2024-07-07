@@ -13,6 +13,8 @@ import { OrderRoutes } from '../modules/order/order.route';
 import { ColorsRoutes } from '../modules/color/color.route';
 import { SizeRoutes } from '../modules/size/size.route';
 import { CartRoutes } from '../modules/cart/cart.route';
+import { CustomersRoutes } from '../modules/customer/customer.route';
+
 
 const router = express.Router();
 
@@ -32,6 +34,10 @@ const moduleRoutes = [
   {
     path: '/sells-managers',
     route: SellsManagerRoutes,
+  },
+  {
+    path: '/customers',
+    route: CustomersRoutes,
   },
   {
     path: '/shops',

@@ -99,14 +99,14 @@ const getSingle = async (id: string): Promise<Coupon | null> => {
 
 //get single by title
 const getCouponByTitle = async (
-  title: string
+  couponName: string
 ): Promise<Coupon | null> => {
-  console.log(title)
   const result = await prisma.coupon.findUnique({
     where: {
-      couponName: title,
+      couponName
     },
   });
+  console.log(result)
   return result;
 };
 
