@@ -15,4 +15,8 @@ export default {
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
     cookie_max_age: process.env.COOKIE_MAX_AGE,
   },
+  sslCommerz: {
+    storeId: process.env.STORE_ID as string,
+    storePass: process.env.STORE_PASS as string,
+  },
 };

@@ -38,11 +38,21 @@ const getAll = async (
     where: whereConditions,
     include: {
       Product: {
-        include: {
-          Shop: true,
+        select: {
+          id: true,
+          minPrice: true,
+          discountPrice: true,
+          productMainImage: true,
+          discountPercentage: true,
+          moneySaved: true,
+          productName: true,
+          Shop: {
+            select: {
+              shopName: true,
+            },
+          },
         },
       },
-      User: true,
     },
     orderBy: {
       [sortBy]: sortOrder,
@@ -61,7 +71,7 @@ const getAll = async (
     0
   );
   const shipping = 90;
-  const taxAmount = 0.015 * subTotal;
+  const taxAmount = 0;
   const totalPayAble = subTotal + shipping + taxAmount;
 
   return {

@@ -14,6 +14,7 @@ import { ColorsRoutes } from '../modules/color/color.route';
 import { SizeRoutes } from '../modules/size/size.route';
 import { CartRoutes } from '../modules/cart/cart.route';
 import { CustomersRoutes } from '../modules/customer/customer.route';
+import { PaymentRoutes } from '../modules/payment/payment.route';
 
 
 const router = express.Router();
@@ -78,6 +79,10 @@ const moduleRoutes = [
   {
     path: '/cart',
     route: CartRoutes,
+  },
+  {
+    path: '/payments',
+    route: PaymentRoutes,
   },
 ];
 

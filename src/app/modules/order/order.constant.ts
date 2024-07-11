@@ -3,6 +3,7 @@ export const orderSearchableFields = [
   'emergencyContactNo',
   'address',
   'email',
+  'trnsId'
 ];
 
 export const orderFilterableFields = ['searchTerm'];
