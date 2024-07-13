@@ -17,7 +17,19 @@ router.get(
   OrderController.getAll
 );
 
-// create 
+// get all orders of a shop
+router.get(
+  '/sells',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  OrderController.getAllSellsOrder
+);
+
+// create
 router.post(
   '/create-order',
   // auth(
@@ -28,39 +40,29 @@ router.post(
   OrderController.createOrder
 );
 
+
 // get single
-// router.get(
-//   '/:id',
-//   // auth(
-//   //   ENUM_USER_ROLE.SUPER_ADMIN,
-//   //   ENUM_USER_ROLE.ADMIN,
-//   // ),
-//   CouponController.getSingle
-// );
+router.get(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  // ),
+  OrderController.getSingle
+);
 
-// // update single
-// router.patch(
-//   '/:id',
-//   auth(
-//     ENUM_USER_ROLE.SUPER_ADMIN,
-//     ENUM_USER_ROLE.ADMIN,
-//     ENUM_USER_ROLE.DRIVER,
-//     ENUM_USER_ROLE.HELPER
-//   ),
-//   validateRequest(HelperValidation.update),
-//   HelperController.updateSingle
-// );
+// update single
+router.patch(
+  '/:id',
+  // auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.DRIVER,
+  //   ENUM_USER_ROLE.HELPER
+  // ),
+  validateRequest(OrderValidation.updateOrder),
+  OrderController.updateSingle
+);
 
-// // inactive
-// router.patch(
-//   '/:id/inactive',
-//   auth(
-//     ENUM_USER_ROLE.SUPER_ADMIN,
-//     ENUM_USER_ROLE.ADMIN,
-//     ENUM_USER_ROLE.DRIVER,
-//     ENUM_USER_ROLE.HELPER
-//   ),
-//   HelperController.inactive
-// );
 
 export const OrderRoutes = router;

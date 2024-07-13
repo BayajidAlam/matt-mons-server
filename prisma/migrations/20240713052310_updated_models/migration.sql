@@ -2,7 +2,7 @@
 CREATE TYPE "UserRole" AS ENUM ('super_admin', 'admin', 'seller', 'sells_manager', 'customer');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('received', 'on_warhouse', 'on_curier', 'shipped', 'handovered', 'canceled');
+CREATE TYPE "OrderStatus" AS ENUM ('placed', 'payment_accepted', 'delivered_to_curier', 'curier_wareshouse', 'being_delivered', 'delivered', 'cancel', 'returned');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -78,7 +78,7 @@ CREATE TABLE "sellsManagers" (
     "userId" TEXT NOT NULL,
     "nidNumber" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "shopId" TEXT,
+    "shopId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -166,15 +166,15 @@ CREATE TABLE "product" (
     "productMainImage" TEXT NOT NULL,
     "productAdditionalImages" TEXT[],
     "productDetails" TEXT NOT NULL,
-    "productAdditionalInfo" TEXT NOT NULL,
+    "productAdditionalInfo" JSONB NOT NULL,
     "minPrice" TEXT NOT NULL,
     "discountPrice" TEXT NOT NULL,
     "discountPercentage" TEXT NOT NULL,
     "moneySaved" TEXT NOT NULL,
-    "isAvailable" BOOLEAN NOT NULL,
-    "productSkuId" TEXT NOT NULL,
+    "sellCount" INTEGER NOT NULL DEFAULT 0,
     "createdBy" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
+    "productSkuId" TEXT NOT NULL,
     "productTags" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -200,9 +200,11 @@ CREATE TABLE "sku" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "quantity" TEXT NOT NULL DEFAULT '0',
+    "availableColor" TEXT[],
+    "availableSize" TEXT[],
+    "shopId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "productId" TEXT NOT NULL,
 
     CONSTRAINT "sku_pkey" PRIMARY KEY ("id")
 );
@@ -211,9 +213,9 @@ CREATE TABLE "sku" (
 CREATE TABLE "colors" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "productSkuId" TEXT,
 
     CONSTRAINT "colors_pkey" PRIMARY KEY ("id")
 );
@@ -222,9 +224,9 @@ CREATE TABLE "colors" (
 CREATE TABLE "sizes" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "shopId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "productSkuId" TEXT,
 
     CONSTRAINT "sizes_pkey" PRIMARY KEY ("id")
 );
@@ -240,10 +242,21 @@ CREATE TABLE "tags" (
 );
 
 -- CreateTable
-CREATE TABLE "orders" (
+CREATE TABLE "carts" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "shopId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "orders" (
+    "id" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
     "contactNumber" TEXT,
     "emergencyContactNumber" TEXT,
     "email" TEXT NOT NULL,
@@ -252,22 +265,46 @@ CREATE TABLE "orders" (
     "shippingCharge" TEXT NOT NULL,
     "tax" TEXT NOT NULL,
     "total" TEXT NOT NULL,
-    "orderStatus" "OrderStatus" NOT NULL DEFAULT 'received',
+    "orderStatus" "OrderStatus" NOT NULL DEFAULT 'placed',
+    "trnsId" TEXT NOT NULL,
+    "paidAmount" INTEGER NOT NULL,
+    "dueAmount" INTEGER NOT NULL,
+    "isPaid" BOOLEAN NOT NULL DEFAULT false,
+    "payment_acceptedAt" TIMESTAMP(3),
+    "delivered_to_curier" TIMESTAMP(3),
+    "curier_wareshouse" TIMESTAMP(3),
+    "being_delivered" TIMESTAMP(3),
+    "delivered" TIMESTAMP(3),
+    "canceledAt" TIMESTAMP(3),
+    "shopId" TEXT NOT NULL,
+    "couponId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "orders_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "carts" (
+CREATE TABLE "order_items" (
     "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+
+    CONSTRAINT "order_items_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "payments" (
+    "id" TEXT NOT NULL,
+    "trnxId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "productId" TEXT[],
+    "orderId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "carts_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -275,6 +312,7 @@ CREATE TABLE "wishlists" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -329,6 +367,24 @@ CREATE UNIQUE INDEX "customers_contactNumber_key" ON "customers"("contactNumber"
 -- CreateIndex
 CREATE UNIQUE INDEX "customers_userId_key" ON "customers"("userId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "shop_shopName_key" ON "shop"("shopName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "coupon_couponName_key" ON "coupon"("couponName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "category_title_key" ON "category"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "sku_title_key" ON "sku"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "orders_trnsId_key" ON "orders"("trnsId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "payments_trnxId_key" ON "payments"("trnxId");
+
 -- AddForeignKey
 ALTER TABLE "superAdmins" ADD CONSTRAINT "superAdmins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -342,7 +398,7 @@ ALTER TABLE "sellers" ADD CONSTRAINT "sellers_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "sellsManagers" ADD CONSTRAINT "sellsManagers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sellsManagers" ADD CONSTRAINT "sellsManagers_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "sellsManagers" ADD CONSTRAINT "sellsManagers_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "customers" ADD CONSTRAINT "customers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -372,19 +428,40 @@ ALTER TABLE "product" ADD CONSTRAINT "product_categoryId_fkey" FOREIGN KEY ("cat
 ALTER TABLE "product" ADD CONSTRAINT "product_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "product" ADD CONSTRAINT "product_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "carts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "product" ADD CONSTRAINT "product_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sku" ADD CONSTRAINT "sku_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "sku" ADD CONSTRAINT "sku_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "colors" ADD CONSTRAINT "colors_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "colors" ADD CONSTRAINT "colors_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "sizes" ADD CONSTRAINT "sizes_productSkuId_fkey" FOREIGN KEY ("productSkuId") REFERENCES "sku"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "sizes" ADD CONSTRAINT "sizes_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES "shop"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "carts" ADD CONSTRAINT "carts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "carts" ADD CONSTRAINT "carts_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "orders_couponId_fkey" FOREIGN KEY ("couponId") REFERENCES "coupon"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_items" ADD CONSTRAINT "order_items_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "order_items" ADD CONSTRAINT "order_items_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payments" ADD CONSTRAINT "payments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payments" ADD CONSTRAINT "payments_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "reviewAndRatings" ADD CONSTRAINT "reviewAndRatings_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
