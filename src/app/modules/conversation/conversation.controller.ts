@@ -11,7 +11,6 @@ import { ConversationService } from './conversation.service';
 const createConversation = catchAsync(async (req: Request, res: Response) => {
   
   const io = req.app.get('io');
-
   const user = req.user;
 
   const result = await ConversationService.createConversationToDB(

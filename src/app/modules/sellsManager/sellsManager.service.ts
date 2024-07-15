@@ -14,7 +14,6 @@ const getAll = async (
   filters: ISellsManagerFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<SellsManager[]>> => {
-
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -48,6 +47,7 @@ const getAll = async (
     orderBy: {
       [sortBy]: sortOrder,
     },
+    include: { user: true },
     skip,
     take: limit,
   });
@@ -108,16 +108,15 @@ const updateSingle = async (
   return result;
 };
 
-
 const deleteSingle = async (id: string): Promise<SellsManager | null> => {
-  return await prisma.$transaction(async (prisma) => {
+  return await prisma.$transaction(async prisma => {
     // Check if the SellsManager exists
     const isExist = await prisma.sellsManager.findUnique({
       where: {
         id,
       },
     });
-    
+
     if (!isExist) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Sells Manager Not Found');
     }

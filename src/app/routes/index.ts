@@ -15,7 +15,8 @@ import { SizeRoutes } from '../modules/size/size.route';
 import { CartRoutes } from '../modules/cart/cart.route';
 import { CustomersRoutes } from '../modules/customer/customer.route';
 import { PaymentRoutes } from '../modules/payment/payment.route';
-
+import { MessageRoutes } from '../modules/message/message.route';
+import { ConversationRoutes } from '../modules/conversation/conversation.route';
 
 const router = express.Router();
 
@@ -83,6 +84,14 @@ const moduleRoutes = [
   {
     path: '/payments',
     route: PaymentRoutes,
+  },
+  {
+    path: '/conversations',
+    route: ConversationRoutes,
+  },
+  {
+    path: '/messages',
+    route: MessageRoutes,
   },
 ];
 

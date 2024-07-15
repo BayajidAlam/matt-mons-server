@@ -1,16 +1,7 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import {
-  createMessage,
-  deleteSingleMessage,
-  getAllMessage,
-  getSingleMessage,
-  updateSingleMessage,
-} from './message.controller';
-import {
-  createMessageZodSchema,
-  updateMessageZodSchema,
-} from './message.validation';
+import { MessageController } from './message.controller';
+import { MessageValidation } from './message.validation';
 
 const router = express.Router();
 
@@ -22,8 +13,8 @@ router.post(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  validateRequest(createMessageZodSchema),
-  createMessage
+  validateRequest(MessageValidation.createMessage),
+  MessageController.create
 );
 
 router.get(
@@ -34,7 +25,7 @@ router.get(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  getAllMessage
+  MessageController.getAll
 );
 
 router.get(
@@ -45,7 +36,7 @@ router.get(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  getSingleMessage
+  MessageController.getSingle
 );
 
 router.patch(
@@ -56,8 +47,8 @@ router.patch(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  validateRequest(updateMessageZodSchema),
-  updateSingleMessage
+  validateRequest(MessageValidation.updateMessage),
+  MessageController.updateSingle
 );
 
 router.delete(
@@ -68,7 +59,7 @@ router.delete(
   //   ENUM_USER_ROLE.DRIVER,
   //   ENUM_USER_ROLE.HELPER
   // ),
-  deleteSingleMessage
+  MessageController.deleteSingle
 );
 
 export const MessageRoutes = router;

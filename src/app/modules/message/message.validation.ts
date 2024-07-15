@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const createMessageZodSchema = z.object({
+const createMessage = z.object({
   body: z.object({
     message: z.string({
       required_error: 'message is required',
@@ -17,7 +17,7 @@ export const createMessageZodSchema = z.object({
   }),
 });
 
-export const updateMessageZodSchema = z.object({
+const updateMessage = z.object({
   body: z.object({
     message: z.string().optional(),
     senderId: z.string().optional(),
@@ -25,3 +25,8 @@ export const updateMessageZodSchema = z.object({
     conversationId: z.string().optional(),
   }),
 });
+
+export const MessageValidation = {
+  createMessage,
+  updateMessage,
+};

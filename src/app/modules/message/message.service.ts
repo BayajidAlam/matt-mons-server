@@ -10,7 +10,7 @@ import { messageSearchableFields } from './message.constant';
 import { IMessageFilters } from './message.interface';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 
-export const createMessageToDB = async (
+const createMessage = async (
   user: JwtPayload | null,
   messageData: Message
 ): Promise<any> => {
@@ -40,7 +40,7 @@ export const createMessageToDB = async (
   }
 };
 
-export const getAllMessageFromDB = async (
+const getAll = async (
   filters: IMessageFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Message[]>> => {
@@ -107,9 +107,7 @@ export const getAllMessageFromDB = async (
   };
 };
 
-export const getSingleMessageFromDB = async (
-  id: string
-): Promise<Message | null> => {
+const getSingleMessage = async (id: string): Promise<Message | null> => {
   const result = await prisma.message.findUnique({
     where: {
       id,
@@ -126,7 +124,7 @@ export const getSingleMessageFromDB = async (
   }
 };
 
-export const updateSingleMessageToDB = async (
+const updateSingle = async (
   id: string,
   payload: Message
 ): Promise<Partial<Message> | null> => {
@@ -155,7 +153,7 @@ export const updateSingleMessageToDB = async (
   return result;
 };
 
-export const deleteSingleMessageFromDB = async (
+const deleteSingle = async (
   id: string
 ): Promise<Partial<Message> | undefined> => {
   const deleteMessage = await prisma.message.delete({
@@ -172,4 +170,12 @@ export const deleteSingleMessageFromDB = async (
       'There is no message with the id/Failed to delete message'
     );
   }
+};
+
+export const MessageService = {
+  createMessage,
+  getAll,
+  getSingleMessage,
+  updateSingle,
+  deleteSingle,
 };

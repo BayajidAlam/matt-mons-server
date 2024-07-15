@@ -3,23 +3,16 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import {
-  createMessageToDB,
-  getAllMessageFromDB,
-  getSingleMessageFromDB,
-  updateSingleMessageToDB,
-  deleteSingleMessageFromDB,
-} from './message.service';
 import pick from '../../../shared/pick';
 import { messageFilterableFields } from './message.constant';
 import { paginationFields } from '../../../constaints/pagination';
+import { MessageService } from './message.service';
 
-
-export const createMessage = catchAsync(async (req: Request, res: Response) => {
+const create = catchAsync(async (req: Request, res: Response) => {
   const io = req.app.get('io');
   const user = req.user;
 
-  const result = await createMessageToDB(user, req.body);
+  const result = await MessageService.createMessage(user, req.body);
 
   io.emit('message', { ...result });
 
@@ -31,11 +24,11 @@ export const createMessage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const getAllMessage = catchAsync(async (req: Request, res: Response) => {
+const getAll = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, messageFilterableFields);
   const pagination = pick(req.query, paginationFields);
 
-  const result = await getAllMessageFromDB(filters, pagination);
+  const result = await MessageService.getAll(filters, pagination);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -46,41 +39,43 @@ export const getAllMessage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const getSingleMessage = catchAsync(
-  async (req: Request, res: Response) => {
-    const result = await getSingleMessageFromDB(req.params.id);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Single message fetched successfully',
-      data: result,
-    });
-  }
-);
+const getSingle = catchAsync(async (req: Request, res: Response) => {
+  const result = await MessageService.getSingleMessage(req.params.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Single message fetched successfully',
+    data: result,
+  });
+});
 
-export const updateSingleMessage = catchAsync(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const payload = req.body;
-    const result = await updateSingleMessageToDB(id, payload);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Message updated successfully',
-      data: result,
-    });
-  }
-);
+const updateSingle = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await MessageService.updateSingle(id, payload);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Message updated successfully',
+    data: result,
+  });
+});
 
-export const deleteSingleMessage = catchAsync(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const result = await deleteSingleMessageFromDB(id);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Message deleted successfully',
-      data: result,
-    });
-  }
-);
+const deleteSingle = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await MessageService.deleteSingle(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Message deleted successfully',
+    data: result,
+  });
+});
+
+export const MessageController = {
+  create,
+  getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
+};
