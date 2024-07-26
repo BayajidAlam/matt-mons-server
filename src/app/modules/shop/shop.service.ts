@@ -13,7 +13,6 @@ const getAll = async (
   filters: IShopFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<Shop[]>> => {
-
   const { searchTerm, ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
