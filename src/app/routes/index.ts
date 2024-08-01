@@ -17,6 +17,7 @@ import { CustomersRoutes } from '../modules/customer/customer.route';
 import { PaymentRoutes } from '../modules/payment/payment.route';
 import { MessageRoutes } from '../modules/message/message.route';
 import { ConversationRoutes } from '../modules/conversation/conversation.route';
+import { WishlistRoutes } from '../modules/wishlist/wishlist.route';
 
 const router = express.Router();
 
@@ -80,6 +81,10 @@ const moduleRoutes = [
   {
     path: '/cart',
     route: CartRoutes,
+  },
+  {
+    path: '/wishlist',
+    route: WishlistRoutes,
   },
   {
     path: '/payments',

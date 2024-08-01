@@ -70,6 +70,23 @@ const getAllFeedProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get all product to show on feed or products page
+const getMostSoldProductsByCategory = catchAsync(async (req: Request, res: Response) => {
+
+  
+  const result = await ProductService.getMostSoldProductsByCategory(
+
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Today best sell products retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const ProductData = req.body;
 
@@ -131,6 +148,7 @@ export const ProductController = {
   getAll,
   getAllDailyBestSell,
   getAllFeedProduct,
+  getMostSoldProductsByCategory,
   getSingle,
   updateSingle,
   deleteSingle,

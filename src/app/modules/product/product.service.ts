@@ -106,10 +106,18 @@ const getAllTodayBestSell = async (
     },
     skip,
     take: limit,
-    include: {
+    select: {
+      id: true,
+      productName: true,
+      productMainImage: true,
+      productTags: true,
+      discountPrice: true,
+      Shop: {
+        select: {
+          shopName: true,
+        },
+      },
       ReviewAndRatings: true,
-      Shop: true,
-      Category: true,
     },
   });
 
@@ -160,10 +168,18 @@ const getAllFeedProduct = async (
     },
     skip,
     take: limit,
-    include: {
+    select: {
+      id: true,
+      productName: true,
+      productMainImage: true,
+      productTags: true,
+      discountPrice: true,
+      Shop: {
+        select: {
+          shopName: true,
+        },
+      },
       ReviewAndRatings: true,
-      Shop: true,
-      Category: true,
     },
   });
 
@@ -183,6 +199,47 @@ const getAllFeedProduct = async (
   };
 };
 
+const getMostSoldProductsByCategory = async () => {
+  const categories = await prisma.category.findMany({
+    include: {
+      Product: {
+        select: {
+          id: true,
+          productName: true,
+          productMainImage: true,
+          productTags: true,
+          discountPrice: true,
+          Shop: {
+            select: {
+              shopName: true,
+            },
+          },
+          ReviewAndRatings: true,
+        },
+        orderBy: {
+          sellCount: 'desc',
+        },
+        take: 1,
+      },
+    },
+  });
+
+  const categoriesWithProducts = categories.filter(
+    category => category.Product.length > 0
+  );
+
+  const mostSoldProducts = categoriesWithProducts.map(
+    category => category.Product[0]
+  );
+
+  return {
+    meta: {
+      total: mostSoldProducts.length,
+    },
+    data: mostSoldProducts,
+  };
+};
+
 const createProduct = async (ProductData: Product): Promise<Product | null> => {
   const moneySaved =
     Number(ProductData.minPrice) - Number(ProductData.discountPrice);
@@ -190,8 +247,6 @@ const createProduct = async (ProductData: Product): Promise<Product | null> => {
 
   ProductData.moneySaved = String(moneySaved);
   ProductData.discountPercentage = String(discountPercentage);
-
-  console.log(ProductData, 'Product Data');
 
   const result = await prisma.product.create({
     data: ProductData,
@@ -278,6 +333,7 @@ export const ProductService = {
   getAll,
   getAllTodayBestSell,
   getAllFeedProduct,
+  getMostSoldProductsByCategory,
   getSingle,
   updateSingle,
   deleteSingle,

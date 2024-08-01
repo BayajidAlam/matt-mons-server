@@ -12,19 +12,22 @@ router.get(
   ProductController.getAll
 );
 
-// get all product of a seller
 router.get(
   '/daily-best-sell',
   // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
   ProductController.getAllDailyBestSell
 );
 
-
-// get all product of a seller
 router.get(
   '/product-feed',
   // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
   ProductController.getAllFeedProduct
+);
+
+router.get(
+  '/most-sold-by-category',
+  // auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SELLER),
+  ProductController.getMostSoldProductsByCategory
 );
 
 // create shop

@@ -25,9 +25,10 @@ model User {
   sentMessages   Conversation[] @relation(name: "Sender")
   placedMessages Conversation[] @relation(name: "Receiver")
 
-  cart    Cart[]
-  Payment Payment[]
-  orders  Order[]
+  cart     Cart[]
+  Payment  Payment[]
+  orders   Order[]
+  WishList WishList[]
 
   @@map("users")
 }
@@ -237,6 +238,7 @@ model Product {
   cartId       String?
   ProductSku   ProductSku  @relation(fields: [productSkuId], references: [id])
   OrderItem    OrderItem[]
+  WishList     WishList[]
 
   @@map("product")
 }
@@ -337,7 +339,7 @@ model Cart {
 model Order {
   id String @id @default(uuid())
 
-  fullName               String  
+  fullName               String
   contactNumber          String?
   emergencyContactNumber String?
   email                  String
@@ -404,13 +406,15 @@ model Payment {
 }
 
 model WishList {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   productId String
-  quantity  Int    @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [productId], references: [id])
 
   @@map("wishlists")
 }
