@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import config from './config';
 import server from './app';
+import prisma from './shared/prisma';
 
 async function main() {
   server.listen(config.port, () => {
@@ -30,6 +31,7 @@ async function main() {
       server.close();
     }
   });
+
 }
 
 main();

@@ -93,6 +93,7 @@ const getAll = async (
 
 //create
 const createCart = async (CartData: Cart): Promise<Cart | null> => {
+  console.log(CartData);
   const isCustomer = await prisma.user.findUnique({
     where: {
       id: CartData.userId,
@@ -113,11 +114,49 @@ const createCart = async (CartData: Cart): Promise<Cart | null> => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'This product is already added');
   }
 
-  const result = await prisma.cart.create({
-    data: CartData,
+  const isProductExist = await prisma.product.findUnique({
+    where: {
+      id: CartData.productId,
+    },
   });
 
-  return result;
+  if (!isProductExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Product does not exist');
+  }
+
+  const isProductExistOnWishList = await prisma.wishList.findFirst({
+    where: {
+      userId: CartData.userId,
+      productId: CartData.productId,
+    },
+  });
+
+  if (isProductExistOnWishList) {
+    const result = await prisma.$transaction(async prisma => {
+      const cartItem = await prisma.cart.create({
+        data: {
+          userId: CartData.userId,
+          productId: CartData.productId,
+        },
+      });
+
+      await prisma.wishList.delete({
+        where: {
+          id: isProductExistOnWishList.id,
+        },
+      });
+
+      return cartItem;
+    });
+
+    return result;
+  } else {
+    const result = await prisma.cart.create({
+      data: CartData,
+    });
+
+    return result;
+  }
 };
 
 // get single

@@ -18,7 +18,7 @@ router.get(
 
 // create
 router.post(
-  '/add-to-cart',
+  '/add-to-wishlist',
   // auth(
   //   ENUM_Shop_ROLE.SUPER_ADMIN,
   //   ENUM_Shop_ROLE.ADMIN,

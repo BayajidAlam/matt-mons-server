@@ -12,6 +12,7 @@ import { WishlistService } from './wishlist.service';
 const getAll = catchAsync(async (req: Request, res: Response) => {
 
   const { userId, ...WishlistData } = req.query;
+
   const filters = pick(WishlistData, WishListFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 

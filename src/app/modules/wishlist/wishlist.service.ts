@@ -1,4 +1,4 @@
-import { Cart, Prisma, UserRole, WishList } from '@prisma/client';
+import { Prisma, UserRole, WishList } from '@prisma/client';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
@@ -14,7 +14,6 @@ const getAll = async (
   filters: IWishlistFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<any>> => {
-
   const { searchTerm } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -37,24 +36,18 @@ const getAll = async (
 
   const wishlistItems = await prisma.wishList.findMany({
     where: whereConditions,
-    // include: {
-    //   Product: {
-    //     select: {
-    //       id: true,
-    //       minPrice: true,
-    //       discountPrice: true,
-    //       productMainImage: true,
-    //       discountPercentage: true,
-    //       moneySaved: true,
-    //       productName: true,
-    //       Shop: {
-    //         select: {
-    //           shopName: true,
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
+    include: {
+      Product: {
+        select: {
+          id: true,
+          productName: true,
+          productMainImage: true,
+          discountPrice: true,
+          moneySaved: true,
+          discountPercentage: true,
+        },
+      },
+    },
     orderBy: {
       [sortBy]: sortOrder,
     },
@@ -66,7 +59,6 @@ const getAll = async (
     where: whereConditions,
   });
   const totalPage = Math.ceil(total / limit);
-
 
   return {
     meta: {
@@ -82,28 +74,29 @@ const getAll = async (
 };
 
 //create
-const createWishlist = async (wishlistData: WishList): Promise<Cart | null> => {
+const createWishlist = async (wishlistData: WishList): Promise<any | null> => {
   const isCustomer = await prisma.user.findUnique({
     where: {
       id: wishlistData.userId,
     },
   });
+
   if (isCustomer?.role != UserRole.customer) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You can not add to wishlist');
   }
 
-  const isSameProductAddedToCart = await prisma.wishList.findFirst({
+  const isSameProductAddedToWishlist = await prisma.wishList.findFirst({
     where: {
       productId: wishlistData.productId,
       userId: wishlistData.userId,
     },
   });
 
-  if (isSameProductAddedToCart) {
+  if (isSameProductAddedToWishlist) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'This product is already added');
   }
 
-  const result = await prisma.cart.create({
+  const result = await prisma.wishList.create({
     data: wishlistData,
   });
 
@@ -132,9 +125,8 @@ const deleteSingle = async (id: string): Promise<WishList | null> => {
   return result;
 };
 
-
 export const WishlistService = {
   createWishlist,
   getAll,
-  deleteSingle
+  deleteSingle,
 };
